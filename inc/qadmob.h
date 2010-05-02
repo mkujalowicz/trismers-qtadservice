@@ -1,3 +1,18 @@
+/*
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+*/
+
 #ifndef QADMOB_H
 #define QADMOB_H
 
@@ -17,8 +32,12 @@
 #  define QADMOBSHARED_EXPORT Q_DECL_IMPORT
 #endif
 
-
+// FORWARD DECLARATIONS
 class QAdMob;
+
+/**
+ * @brief Represents an Ad
+ */
 class QADMOBSHARED_EXPORT QAdMobAd : QObject
 {
     Q_OBJECT
@@ -73,6 +92,9 @@ private:
     friend class QAdMob;
 };
 
+/**
+  * @brief Used to fetch ads from the admob servers
+  */
 class QADMOBSHARED_EXPORT QAdMob : public QObject
 {
     Q_OBJECT
@@ -95,9 +117,16 @@ class QADMOBSHARED_EXPORT QAdMob : public QObject
     Q_PROPERTY(Gender visitorGender READ visitorGender WRITE setVisitorGender RESET resetVisitorGender)
 
 signals:
-    void adReceived(bool);
+    /**
+      * @brief this signals is triggered when an ad is received.
+      * @param aResult true if ad was received sucessfully, false otherwise.
+      */
+    void adReceived(bool aResult);
 
 public slots:
+    /**
+      * @brief starts the ad fetching process, signal adReceived is triggered as a result.
+      */
     void fetchAd();
 
 private slots:
@@ -110,20 +139,58 @@ private slots:
 public:
     explicit QAdMob(QObject *parent = 0);
 
+    /**
+      * @brief Used to specify the gender of th use. Used to for better ad targetting by AdMob
+      */
     enum Gender { GenderUnknown = 0, GenderMale , GenderFemale };
+
+    /**
+      * @brief Used to specify the type of ad you want, a banner or a text ad
+      */
     enum AdTypeHint { AdTypeHintText = 0, AdTypeHintBanner };
 
-    void setPublisherId(const QString&);
+    /**
+      * @brief Set the publisher Id, see AdMob pages for your publisher id
+      * @param aPublisherId your publisher id
+      */
+    void setPublisherId(const QString& aPublisherId);
+
+    /**
+      * @returns QString, your publisher id
+      */
     QString publisherId() const;
 
-    void setKeywords(const QString&); /* Space separated keywords */
+    /**
+      * @brief Sets the keywords, AdMob uses show targeted ads, keywords are seperated by spaces
+      */
+    void setKeywords(const QString&);
+
+    /**
+      * @returns QString, the keyrds you have set @see setKeywords
+      */
     QString keywords() const;
+
+    /**
+      * @brief reset keywords
+      */
     void resetKeywords();
 
-    void setAdTypeHint( QAdMob::AdTypeHint );
+    /**
+      * @brief Used to specify what type of ad you want, a banner or a text ad
+      * @param aType @see AdTypeHint
+      */
+    void setAdTypeHint( QAdMob::AdTypeHint aType);
+
+    /**
+      * @brief returns the ad type hint you have set.
+      * @returns QAdMob::AdTypeHint
+      */
     QAdMob::AdTypeHint adTypeHint() const;
 
-    void setTestMode(const QBool&);
+    /**
+      * @brief Used to enable test mode, if test mode is enable AdMob will always send you test ad.
+      */
+    void setTestMode(const QBool& aMode);
     QBool testMode() const;
 
     QString adLanguage() const;
@@ -150,7 +217,6 @@ public:
     void resetVisitorGender();
 
     QBool adReady() const;
-
     const QAdMobAd& ad() const;
 
 private:
@@ -176,7 +242,7 @@ private:
     QNetworkAccessManager iNam;
 
     QAdMobAd iAd;
-    QBool   iAdReady;
+    bool    iAdReady;
 
 };
 

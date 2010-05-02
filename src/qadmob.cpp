@@ -1,3 +1,18 @@
+/*
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+*/
+
 #include <QStringList>
 #include <QNetworkRequest>
 #include <QDebug>
@@ -196,7 +211,6 @@ QString QAdMob::genDataString() const
 
 void QAdMob::fetchAd()
 {
-
     QNetworkRequest request;
     request.setUrl(QUrl(kAdMobRequestUrl));
     request.setRawHeader("User-Agent", kUserAgent.toUtf8());
@@ -214,13 +228,13 @@ void QAdMob::fetchAd()
     QObject::connect(reply, SIGNAL(finished()),  this, SLOT(networkReplyFinished()));
     QObject::connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
                              this, SLOT(networkReplyError(QNetworkReply::NetworkError)));
-
 }
 
-void QAdMob::networkReplyError ( QNetworkReply::NetworkError aCode )
+void QAdMob::networkReplyError ( QNetworkReply::NetworkError /*aCode*/ )
 {
     //todo: should cancel all outstanding requests !
     emit adReceived(false);
+    iAdReady = false;
     sender()->deleteLater();
 }
 
@@ -231,8 +245,7 @@ void QAdMob::networkReplyFinished ()
 
     handleResponseData(responseData);
 
-    sender()->deleteLater();
-
+    reply->deleteLater();
 }
 
 void QAdMob::handleResponseData( const QByteArray& aResponseData )
@@ -263,7 +276,6 @@ void QAdMob::handleResponseData( const QByteArray& aResponseData )
     QVariantList imageDimensionsList = result["d"].toList();
     QSize imageSize (imageDimensionsList[0].toInt(), imageDimensionsList[1].toInt());
     iAd.iSize = imageSize;
-
 
     QVariantMap markupMap = result ["markup"].toMap();
 
@@ -302,7 +314,7 @@ void QAdMob::handleAdTitleImageDownload()
     if (!iAd.iAdUrlTypeImage.isNull())
         handleAdReady();
 
-    sender()->deleteLater();
+    reply->deleteLater();
 }
 
 void QAdMob::handleAdTargetImageDownload()
@@ -313,14 +325,14 @@ void QAdMob::handleAdTargetImageDownload()
     iAd.iAdUrlTypeImage = QImage::fromData(responseData);
 
     if (!iAd.iAdTitleImage.isNull())
-        emit handleAdReady();
+        handleAdReady();
 
-    sender()->deleteLater();
+    reply->deleteLater();
 }
 
 void QAdMob::handleAdReady()
 {
-    iAdReady = QBool(true);
+    iAdReady = true;
     emit adReceived(true);
 }
 
@@ -331,5 +343,5 @@ const QAdMobAd& QAdMob::ad() const
 
 QBool QAdMob::adReady() const
 {
-    return iAdReady;
+    return QBool(iAdReady);
 }

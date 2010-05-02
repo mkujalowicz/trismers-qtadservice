@@ -3,10 +3,13 @@
 # -------------------------------------------------
 
 QT += network
+QT -= gui
 TARGET = qadmob
 TEMPLATE = lib
 DESTDIR = ./debug
 DEFINES += QADMOB_LIBRARY
+VERSION = 0.1
+
 
 INCLUDEPATH += inc/
 
