@@ -19,7 +19,11 @@
 #include <QSize>
 
 #include "qadmob.h"
+#ifdef QADMOB_QT4
 #include "parser.h"
+#else
+#include <QJsonDocument>
+#endif
 
 // CONSTANTS
 static const QString kAdMobRequestUrl = "http://r.admob.com/ad_source.php";
@@ -71,12 +75,12 @@ QAdMob::AdTypeHint QAdMob::adTypeHint() const
     return iAdTypeHint;
 }
 
-void QAdMob::setTestMode(const QBool& aMode)
+void QAdMob::setTestMode(const bool& aMode)
 {
         iTestMode = aMode;
 }
 
-QBool QAdMob::testMode() const
+bool QAdMob::testMode() const
 {
     return iTestMode;
 }
@@ -250,16 +254,12 @@ void QAdMob::networkReplyFinished ()
 
 void QAdMob::handleResponseData( const QByteArray& aResponseData )
 {
-    QJson::Parser parser;
-    bool ok;
-
-    QVariantMap result = parser.parse(aResponseData, &ok).toMap();
-
-    if (!ok)
-    {
+    QVariant parsedResult = parseResponseData(aResponseData);
+    if (parsedResult.type() != QVariant::Map) {
         emit adReceived(false);
         return;
     }
+    QVariantMap result = parsedResult.toMap();
 
     QNetworkRequest request;
     request.setRawHeader("User-Agent", kUserAgent.toUtf8());
@@ -303,6 +303,30 @@ void QAdMob::handleResponseData( const QByteArray& aResponseData )
 
 }
 
+QVariant QAdMob::parseResponseData( const QByteArray& aResponseData )
+{
+#ifdef QADMOB_QT4
+    QJson::Parser parser;
+    bool ok;
+
+    QVariant result = parser.parse(aResponseData, &ok);
+
+    if (!ok)
+    {
+        return QVariant();
+    }
+#else
+    QJsonParseError error;
+    QJsonDocument parser =  QJsonDocument::fromJson(aResponseData, &error);
+
+    if (error.error != QJsonParseError::NoError)
+    {
+        return QVariant();
+    }
+    return parser.toVariant();
+#endif
+}
+
 
 void QAdMob::handleAdTitleImageDownload()
 {
@@ -341,7 +365,7 @@ const QAdMobAd& QAdMob::ad() const
     return iAd;
 }
 
-QBool QAdMob::adReady() const
+bool QAdMob::adReady() const
 {
-    return QBool(iAdReady);
+    return bool(iAdReady);
 }

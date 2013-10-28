@@ -19,7 +19,6 @@
 #include <QObject>
 #include <QString>
 #include <QSize>
-#include <QBool>
 #include <QDate>
 #include <QImage>
 #include <QNetworkAccessManager>
@@ -104,9 +103,9 @@ class QADMOBSHARED_EXPORT QAdMob : public QObject
     Q_PROPERTY(QString publisherId READ publisherId WRITE setPublisherId)
     Q_PROPERTY(QString keywords READ keywords WRITE setKeywords RESET resetKeywords)
     Q_PROPERTY(AdTypeHint adTypeHint READ adTypeHint WRITE setAdTypeHint)
-    Q_PROPERTY(QBool testMode READ testMode WRITE setTestMode)
+    Q_PROPERTY(bool testMode READ testMode WRITE setTestMode)
     Q_PROPERTY(QString adLanguage READ adLanguage WRITE setAdLanguage)
-    Q_PROPERTY(QBool adReady READ adReady)
+    Q_PROPERTY(bool adReady READ adReady)
 
     /* Visitor propertyes */
     /* Read http://developer.admob.com/wiki/Requests for more info */
@@ -190,8 +189,8 @@ public:
     /**
       * @brief Used to enable test mode, if test mode is enable AdMob will always send you test ad.
       */
-    void setTestMode(const QBool& aMode);
-    QBool testMode() const;
+    void setTestMode(const bool& aMode);
+    bool testMode() const;
 
     QString adLanguage() const;
     void setAdLanguage(const QString& );
@@ -216,12 +215,13 @@ public:
     QAdMob::Gender visitorGender() const;
     void resetVisitorGender();
 
-    QBool adReady() const;
+    bool adReady() const;
     const QAdMobAd& ad() const;
 
 private:
     QString genDataString() const;
     void handleResponseData( const QByteArray& aResponseData );
+    QVariant parseResponseData( const QByteArray& aResponseData );
 
 
     void handleAdReady();
@@ -229,7 +229,7 @@ private:
     QString iPublisherId;
     QString iKeywords;
     AdTypeHint iAdTypeHint;
-    QBool   iTestMode;
+    bool   iTestMode;
     QString iAdLanguage;
 
     QString iVisitorAreaCode;
