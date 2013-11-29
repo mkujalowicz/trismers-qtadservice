@@ -261,12 +261,6 @@ void QAdMob::handleResponseData( const QByteArray& aResponseData )
     }
     QVariantMap result = parsedResult.toMap();
 
-    QNetworkRequest request;
-    request.setRawHeader("User-Agent", kUserAgent.toUtf8());
-
-    request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
-    request.setAttribute(QNetworkRequest::CacheSaveControlAttribute, false);
-
     QString text = result["text"].toString();
     iAd.iText = text;
 
@@ -285,22 +279,7 @@ void QAdMob::handleResponseData( const QByteArray& aResponseData )
     QString adTitleImageUrl = markupMap["$"].toMap()["t"].toMap()["u"].toString();
     QString adTargetImageUrl = markupMap["$"].toMap()["a"].toMap()["u"].toString();
 
-    request.setUrl(QUrl(adTitleImageUrl));
-
-    QNetworkReply* reply = iNam.get(request);
-
-    QObject::connect(reply, SIGNAL(finished()),  this, SLOT(handleAdTitleImageDownload()));
-    QObject::connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
-                             this, SLOT(networkReplyError(QNetworkReply::NetworkError)));
-
-    request.setUrl(QUrl(adTargetImageUrl));
-
-    reply = iNam.get(request);
-
-    QObject::connect(reply, SIGNAL(finished()),  this, SLOT(handleAdTargetImageDownload()));
-    QObject::connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
-                             this, SLOT(networkReplyError(QNetworkReply::NetworkError)));
-
+    handleAdReady();
 }
 
 QVariant QAdMob::parseResponseData( const QByteArray& aResponseData )
@@ -325,33 +304,6 @@ QVariant QAdMob::parseResponseData( const QByteArray& aResponseData )
     }
     return parser.toVariant();
 #endif
-}
-
-
-void QAdMob::handleAdTitleImageDownload()
-{
-    QNetworkReply* reply = static_cast<QNetworkReply*> ( sender() );
-    QByteArray responseData = reply->readAll();
-
-    iAd.iAdTitleImage = QImage::fromData(responseData);
-
-    if (!iAd.iAdUrlTypeImage.isNull())
-        handleAdReady();
-
-    reply->deleteLater();
-}
-
-void QAdMob::handleAdTargetImageDownload()
-{
-    QNetworkReply* reply = static_cast<QNetworkReply*> ( sender() );
-    QByteArray responseData = reply->readAll();
-
-    iAd.iAdUrlTypeImage = QImage::fromData(responseData);
-
-    if (!iAd.iAdTitleImage.isNull())
-        handleAdReady();
-
-    reply->deleteLater();
 }
 
 void QAdMob::handleAdReady()

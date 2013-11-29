@@ -42,10 +42,8 @@ class QADMOBSHARED_EXPORT QAdMobAd : QObject
     Q_OBJECT
 
     Q_PROPERTY(QString text READ text)
-    Q_PROPERTY(QString url READ url)
+    Q_PROPERTY(QUrl url READ url)
     Q_PROPERTY(QSize size READ size)
-    Q_PROPERTY(QImage adTitleImage READ adTitleImage)
-    Q_PROPERTY(QImage adUrlTypeImage READ adUrlTypeImage)
     Q_PROPERTY(QString adMobStampText READ adMobStampText)
 
 public:
@@ -55,7 +53,7 @@ public:
         return iText;
     }
 
-    QString url() const
+    QUrl url() const
     {
         return iUrl;
     }
@@ -65,16 +63,6 @@ public:
         return iSize;
     }
 
-    QImage adUrlTypeImage() const
-    {
-        return iAdUrlTypeImage;
-    }
-
-    QImage adTitleImage() const
-    {
-        return iAdTitleImage;
-    }
-
     QString adMobStampText() const
     {
         return iAdMobStampText;
@@ -82,10 +70,8 @@ public:
 
 private:
     QString iText;
-    QString iUrl;
+    QUrl iUrl;
     QSize   iSize;
-    QImage iAdTitleImage;
-    QImage iAdUrlTypeImage;
     QString iAdMobStampText;
 
     friend class QAdMob;
@@ -131,9 +117,6 @@ public slots:
 private slots:
     void networkReplyError ( QNetworkReply::NetworkError aCode );
     void networkReplyFinished ();
-
-    void handleAdTitleImageDownload();
-    void handleAdTargetImageDownload();
 
 public:
     explicit QAdMob(QObject *parent = 0);
