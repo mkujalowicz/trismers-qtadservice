@@ -16,6 +16,7 @@
 #ifndef QADMOB_H
 #define QADMOB_H
 
+#include <QtQml/qqml.h>
 #include <QObject>
 #include <QString>
 #include <QSize>
@@ -24,102 +25,36 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
+#include "qadmobad.h"
+#include "qadserviceplatform.h"
 
-#if defined(QADMOB_LIBRARY)
-#  define QADMOBSHARED_EXPORT Q_DECL_EXPORT
-#else
-#  define QADMOBSHARED_EXPORT Q_DECL_IMPORT
-#endif
+#define Q_ADMOB_EXPORT
 
-// FORWARD DECLARATIONS
-class QAdMob;
-
-/**
- * @brief Represents an Ad
- */
-class QADMOBSHARED_EXPORT QAdMobAd : QObject
-{
-    Q_OBJECT
-
-    Q_PROPERTY(QString text READ text)
-    Q_PROPERTY(QUrl url READ url)
-    Q_PROPERTY(QSize size READ size)
-    Q_PROPERTY(QString adMobStampText READ adMobStampText)
-
-public:
-
-    QString text() const
-    {
-        return iText;
-    }
-
-    QUrl url() const
-    {
-        return iUrl;
-    }
-
-    QSize size() const
-    {
-        return iSize;
-    }
-
-    QString adMobStampText() const
-    {
-        return iAdMobStampText;
-    }
-
-private:
-    QString iText;
-    QUrl iUrl;
-    QSize   iSize;
-    QString iAdMobStampText;
-
-    friend class QAdMob;
-};
 
 /**
   * @brief Used to fetch ads from the admob servers
   */
-class QADMOBSHARED_EXPORT QAdMob : public QObject
+class Q_ADMOB_EXPORT QAdMob : public QObject
 {
     Q_OBJECT
+
+    Q_ENUMS(Status)
     Q_ENUMS(Gender)
     Q_ENUMS(AdTypeHint)
 
-    Q_PROPERTY(QString publisherId READ publisherId WRITE setPublisherId)
-    Q_PROPERTY(QString keywords READ keywords WRITE setKeywords RESET resetKeywords)
-    Q_PROPERTY(AdTypeHint adTypeHint READ adTypeHint WRITE setAdTypeHint)
-    Q_PROPERTY(bool testMode READ testMode WRITE setTestMode)
-    Q_PROPERTY(QString adLanguage READ adLanguage WRITE setAdLanguage)
-    Q_PROPERTY(bool adReady READ adReady)
+    Q_PROPERTY(QAdMobAd *ad READ ad NOTIFY adChanged)
+    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
+    Q_PROPERTY(QAdServicePlatform *platform READ platform WRITE setPlatform NOTIFY platformChanged)
 
-    /* Visitor propertyes */
-    /* Read http://developer.admob.com/wiki/Requests for more info */
-    Q_PROPERTY(QString visitorPostalCode READ visitorPostalCode WRITE setVisitorPostalCode RESET resetVisitorPostalCode)
-    Q_PROPERTY(QString visitorAreaCode READ visitorAreaCode WRITE setVisitorAreaCode RESET resetVisitorAreaCode)
-    Q_PROPERTY(QString visitorLocationCoords READ visitorLocationCoords WRITE setVisitorLocationCoords RESET resetVisitorLocationCoors)
-    Q_PROPERTY(QDate visitorDOB READ visitorDOB WRITE setVisitorDOB RESET resetVisitorDOB)
-    Q_PROPERTY(Gender visitorGender READ visitorGender WRITE setVisitorGender RESET resetVisitorGender)
-
-signals:
-    /**
-      * @brief this signals is triggered when an ad is received.
-      * @param aResult true if ad was received sucessfully, false otherwise.
-      */
-    void adReceived(bool aResult);
-
-public slots:
-    /**
-      * @brief starts the ad fetching process, signal adReceived is triggered as a result.
-      */
-    void fetchAd();
-
-private slots:
-    void networkReplyError ( QNetworkReply::NetworkError aCode );
-    void networkReplyFinished ();
+    Q_PROPERTY(QString publisherId READ publisherId WRITE setPublisherId NOTIFY publisherIdChanged)
+    Q_PROPERTY(QString keywords READ keywords WRITE setKeywords RESET resetKeywords NOTIFY keywordsChanged)
+    Q_PROPERTY(AdTypeHint adTypeHint READ adTypeHint WRITE setAdTypeHint NOTIFY adTypeHintChanged)
+    Q_PROPERTY(bool testMode READ testMode WRITE setTestMode NOTIFY testModeChanged)
+    Q_PROPERTY(QString adLanguage READ adLanguage WRITE setAdLanguage NOTIFY adLanguageChanged)
 
 public:
-    explicit QAdMob(QObject *parent = 0);
+
+    enum Status { Null = 0, Ready, Loading, Error };
 
     /**
       * @brief Used to specify the gender of th use. Used to for better ad targetting by AdMob
@@ -130,6 +65,39 @@ public:
       * @brief Used to specify the type of ad you want, a banner or a text ad
       */
     enum AdTypeHint { AdTypeHintText = 0, AdTypeHintBanner };
+
+signals:
+    void statusChanged(Status);
+
+    void publisherIdChanged(const QString &arg);
+
+    void keywordsChanged(const QString &arg);
+
+    void adTypeHintChanged(AdTypeHint arg);
+
+    void testModeChanged(bool arg);
+
+    void adLanguageChanged(const QString &arg);
+
+    void adChanged(QAdMobAd * arg);
+
+    void platformChanged(QAdServicePlatform * arg);
+
+public slots:
+    /**
+      * @brief starts the ad fetching process, signal adReceived is triggered as a result.
+      */
+    Q_INVOKABLE void fetchAd();
+
+private slots:
+    void networkReplyFinished ();
+
+public:
+    explicit QAdMob(QObject *parent = 0);
+
+    ~QAdMob();
+
+    Status status() const;
 
     /**
       * @brief Set the publisher Id, see AdMob pages for your publisher id
@@ -172,61 +140,34 @@ public:
     /**
       * @brief Used to enable test mode, if test mode is enable AdMob will always send you test ad.
       */
-    void setTestMode(const bool& aMode);
+    void setTestMode(bool aMode);
     bool testMode() const;
 
     QString adLanguage() const;
     void setAdLanguage(const QString& );
 
-    void setVisitorAreaCode( const QString& );
-    QString visitorAreaCode() const;
-    void resetVisitorAreaCode();
+    QAdMobAd *ad();
 
-    void setVisitorPostalCode( const QString& );
-    QString visitorPostalCode() const;
-    void resetVisitorPostalCode();
-
-    void setVisitorLocationCoords( const QString& );
-    QString visitorLocationCoords() const;
-    void resetVisitorLocationCoors();
-
-    void setVisitorDOB( const QDate& );
-    QDate visitorDOB() const;
-    void resetVisitorDOB();
-
-    void setVisitorGender( QAdMob::Gender );
-    QAdMob::Gender visitorGender() const;
-    void resetVisitorGender();
-
-    bool adReady() const;
-    const QAdMobAd& ad() const;
+    QAdServicePlatform * platform() const;
+    void setPlatform(QAdServicePlatform * arg);
 
 private:
-    QString genDataString() const;
-    void handleResponseData( const QByteArray& aResponseData );
-    QVariant parseResponseData( const QByteArray& aResponseData );
+    void fetchAdFromUrl(const QUrl &, const QByteArray&);
+    bool handleResponseData( const QByteArray& aResponseData );
+    QVariant parseJsonResponseData( const QByteArray& aResponseData );
+    void setStatus(Status);
+    void setAd(QAdMobAd *);
+private:
+    Status m_status;
+    QNetworkReply *m_reply;
+    QAdServicePlatform * m_platform;
 
-
-    void handleAdReady();
-
-    QString iPublisherId;
-    QString iKeywords;
-    AdTypeHint iAdTypeHint;
-    bool   iTestMode;
-    QString iAdLanguage;
-
-    QString iVisitorAreaCode;
-    QString iVisitorPostalCode;
-    QString iVisitorLocationCoords;
-    QDate   iVisitorDob;
-    Gender  iVisitorGender;
-
-
-    QNetworkAccessManager iNam;
-
-    QAdMobAd iAd;
-    bool    iAdReady;
-
+    QString     m_publisherId;
+    QString     m_keywords;
+    AdTypeHint  m_adTypeHint;
+    bool        m_testMode;
+    QString     m_adLanguage;
+    QAdMobAd    *m_ad;
 };
 
 #endif // QADMOB_H

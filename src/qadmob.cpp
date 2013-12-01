@@ -17,6 +17,7 @@
 #include <QNetworkRequest>
 #include <QDebug>
 #include <QSize>
+#include <QQmlEngine>
 
 #include "qadmob.h"
 #ifdef QADMOB_QT4
@@ -25,264 +26,174 @@
 #include <QJsonDocument>
 #endif
 
-// CONSTANTS
-static const QString kAdMobRequestUrl = "http://r.admob.com/ad_source.php";
-static const QString kContentType = "application/x-www-form-urlencoded";
-static const QString kClientSDK = "20100322-ANDROID-3312276cc1406347";
+#define QADMOB_MAXIMUM_REDIRECT_RECURSION 4
 
+// CONSTANTS
 static const QString kUserAgent ="Mozilla/5.0 (SymbianOS/9.4; Series60/5.0 NokiaN97-1/12.0.024; Profile/MIDP-2.1 Configuration/CLDC-1.1; en-us) AppleWebKit/525 (KHTML, like Gecko) BrowserNG/7.1.12344";
 
-//
 QAdMob::QAdMob(QObject *parent) :
-    QObject(parent), iAdTypeHint(AdTypeHintText),
-    iTestMode ( false ), iVisitorGender(GenderUnknown), iAdReady ( false )
+    QObject(parent), m_status(Null), m_reply(NULL), m_platform(NULL), m_adTypeHint(AdTypeHintText),
+    m_testMode ( false ), m_ad(new QAdMobAd(this))
 {
 }
 
-
-void QAdMob::setPublisherId(const QString& aPublisherId)
+QAdMob::~QAdMob()
 {
-    iPublisherId = aPublisherId;
+    if (m_reply) {
+        m_reply->abort();
+        delete m_reply;
+        m_reply = NULL;
+    }
+}
+
+QAdMob::Status QAdMob::status() const
+{
+    return m_status;
+}
+
+
+void QAdMob::setPublisherId(const QString& arg)
+{
+    if (m_publisherId != arg) {
+        m_publisherId = arg;
+        emit publisherIdChanged(arg);
+    }
 }
 
 QString QAdMob::publisherId() const
 {
-    return iPublisherId;
+    return m_publisherId;
 }
 
-void QAdMob::setKeywords(const QString& aKeywords)
+void QAdMob::setKeywords(const QString& arg)
 {
-    iKeywords = aKeywords;
+    if (m_keywords != arg) {
+        m_keywords = arg;
+        emit keywordsChanged(arg);
+    }
 }
 
 QString QAdMob::keywords() const
 {
-    return iKeywords;
+    return m_keywords;
 }
 
 void QAdMob::resetKeywords()
 {
-    iKeywords.clear();
+    if (m_keywords.length()) {
+        m_keywords.clear();
+        emit keywordsChanged(m_keywords);
+    }
 }
 
-void QAdMob::setAdTypeHint( QAdMob::AdTypeHint aTypeHint)
+void QAdMob::setAdTypeHint( QAdMob::AdTypeHint arg)
 {
-    iAdTypeHint = aTypeHint;
+    if (m_adTypeHint != arg) {
+        m_adTypeHint = arg;
+        emit adTypeHintChanged(arg);
+    }
 }
 
 QAdMob::AdTypeHint QAdMob::adTypeHint() const
 {
-    return iAdTypeHint;
+    return m_adTypeHint;
 }
 
-void QAdMob::setTestMode(const bool& aMode)
+void QAdMob::setTestMode(bool arg)
 {
-        iTestMode = aMode;
+    if (m_testMode != arg) {
+        m_testMode = arg;
+        emit testModeChanged(arg);
+    }
 }
 
 bool QAdMob::testMode() const
 {
-    return iTestMode;
+    return m_testMode;
 }
 
 
 QString QAdMob::adLanguage() const
 {
-    return iAdLanguage;
+    return m_adLanguage;
 }
 
-void QAdMob::setAdLanguage(const QString& aLanguage)
+void QAdMob::setAdLanguage(const QString& arg)
 {
-    iAdLanguage = aLanguage;
-}
-
-void QAdMob::setVisitorAreaCode( const QString& aCode)
-{
-    iVisitorAreaCode = aCode;
-}
-
-QString QAdMob::visitorAreaCode() const
-{
-    return iVisitorAreaCode;
-}
-
-void QAdMob::resetVisitorAreaCode()
-{
-    iVisitorAreaCode.clear();
-}
-
-void QAdMob::setVisitorPostalCode( const QString& aCode)
-{
-    iVisitorPostalCode = aCode;
-}
-
-QString QAdMob::visitorPostalCode() const
-{
-    return iVisitorPostalCode;
-}
-
-void QAdMob::resetVisitorPostalCode()
-{
-    iVisitorPostalCode.clear();
-}
-
-void QAdMob::setVisitorLocationCoords( const QString& aCoords)
-{
-    iVisitorLocationCoords=aCoords;
-}
-
-QString QAdMob::visitorLocationCoords() const
-{
-    return iVisitorLocationCoords;
-}
-
-void QAdMob::resetVisitorLocationCoors()
-{
-    iVisitorLocationCoords.clear();
-}
-
-void QAdMob::setVisitorDOB( const QDate& aDate)
-{
-    iVisitorDob = aDate;
-}
-
-QDate QAdMob::visitorDOB() const
-{
-    return iVisitorDob;
-}
-
-void QAdMob::resetVisitorDOB()
-{
-    iVisitorDob = QDate();
-}
-
-void QAdMob::setVisitorGender( QAdMob::Gender aGender)
-{
-    iVisitorGender = aGender;
-}
-
-QAdMob::Gender QAdMob::visitorGender() const
-{
-    return iVisitorGender;
-}
-
-void QAdMob::resetVisitorGender()
-{
-    iVisitorGender = GenderUnknown;
-}
-
-
-QString QAdMob::genDataString() const
-{
-    QStringList stringList;
-
-    QString timeStamp = "z=" + QString::number( QDateTime::currentDateTime().toTime_t() , 10 );
-    stringList.append(timeStamp);
-
-    const QString requestType = "rt=0" ; // request type, 0 is ad request
-
-    stringList.append( requestType.toUtf8() );
-
-    if (iAdLanguage.length())
-        stringList.append("l=" + iAdLanguage.toUtf8());
-    else
-        stringList.append("l=en");
-
-    stringList.append("f=jsonp");
-    stringList.append("s=" + iPublisherId.toUtf8());
-    stringList.append("i=");    // needed like this !
-
-    switch(iAdTypeHint)
-    {
-    case AdTypeHintText:
-        stringList.append("y=text");
-        break;
-
-    case AdTypeHintBanner:
-        stringList.append("y=banner");
-        break;
-
+    if (m_adLanguage != arg) {
+        m_adLanguage = arg;
+        emit adLanguageChanged(arg);
     }
-
-    if (iTestMode)
-        stringList.append("m=test");
-
-    stringList.append("client_sdk=1");
-    stringList.append("v=" + kClientSDK.toUtf8());
-
-    return stringList.join("&");
 }
 
 void QAdMob::fetchAd()
 {
-    QNetworkRequest request;
-    request.setUrl(QUrl(kAdMobRequestUrl));
-    request.setRawHeader("User-Agent", kUserAgent.toUtf8());
-
-    request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
-    request.setAttribute(QNetworkRequest::CacheSaveControlAttribute, false);
-
-    request.setRawHeader("Content-Type", kContentType.toUtf8());
-
-    QByteArray postBody ;
-    postBody = genDataString().toUtf8();
-
-    QNetworkReply* reply = iNam.post(request, postBody);
-
-    QObject::connect(reply, SIGNAL(finished()),  this, SLOT(networkReplyFinished()));
-    QObject::connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
-                             this, SLOT(networkReplyError(QNetworkReply::NetworkError)));
-}
-
-void QAdMob::networkReplyError ( QNetworkReply::NetworkError /*aCode*/ )
-{
-    //todo: should cancel all outstanding requests !
-    emit adReceived(false);
-    iAdReady = false;
-    sender()->deleteLater();
-}
-
-void QAdMob::networkReplyFinished ()
-{
-    QNetworkReply* reply = static_cast<QNetworkReply*> ( sender() );
-    QByteArray responseData = reply->readAll();
-
-    handleResponseData(responseData);
-
-    reply->deleteLater();
-}
-
-void QAdMob::handleResponseData( const QByteArray& aResponseData )
-{
-    QVariant parsedResult = parseResponseData(aResponseData);
-    if (parsedResult.type() != QVariant::Map) {
-        emit adReceived(false);
-        return;
+    if (m_reply) {
+        m_reply->abort();
+        delete m_reply;
+        m_reply = NULL;
     }
-    QVariantMap result = parsedResult.toMap();
-
-    QString text = result["text"].toString();
-    iAd.iText = text;
-
-    QString url = result["url"].toString();
-    iAd.iUrl = url;
-
-    QVariantList imageDimensionsList = result["d"].toList();
-    QSize imageSize (imageDimensionsList[0].toInt(), imageDimensionsList[1].toInt());
-    iAd.iSize = imageSize;
-
-    QVariantMap markupMap = result ["markup"].toMap();
-
-    QVariantList adMobStringList = markupMap["v"].toList();
-    QString adsByAdmobString = adMobStringList.last().toMap()["x"].toString();
-
-    QString adTitleImageUrl = markupMap["$"].toMap()["t"].toMap()["u"].toString();
-    QString adTargetImageUrl = markupMap["$"].toMap()["a"].toMap()["u"].toString();
-
-    handleAdReady();
+    if (m_platform == NULL) {
+        setStatus(Error);
+    } else {
+        fetchAdFromUrl(m_platform->prepareUrlForRequest(*this), m_platform->preparePostDataForRequest(*this));
+    }
 }
 
-QVariant QAdMob::parseResponseData( const QByteArray& aResponseData )
+void QAdMob::networkReplyFinished()
+{
+    int m_redirectCount = 0; //TODO: make an attribute for it
+    if (m_reply) {
+        m_redirectCount++;
+        if (m_redirectCount < QADMOB_MAXIMUM_REDIRECT_RECURSION) {
+            QVariant redirect = m_reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+            if (redirect.isValid()) {
+                QUrl url = m_reply->url().resolved(redirect.toUrl());
+                m_reply->deleteLater();
+                m_reply = 0;
+                fetchAdFromUrl(url, QByteArray());
+                return;
+            }
+        }
+        m_redirectCount = 0;
+
+        if (m_reply->error() == QNetworkReply::NoError) {
+            QByteArray responseData = m_reply->readAll();
+            m_reply->deleteLater();
+            m_reply = 0;
+            bool ok = handleResponseData(responseData);
+            if (ok) {
+                setStatus(Ready);
+            } else {
+                setStatus(Error);
+            }
+        } else {
+            m_reply->deleteLater();
+            m_reply = 0;
+            setStatus(Error);
+        }
+    }
+}
+
+bool QAdMob::handleResponseData( const QByteArray& aResponseData )
+{
+    QVariant parsedResult = parseJsonResponseData(aResponseData);
+    if (!parsedResult.isValid() || parsedResult.isNull()) {
+        return false;
+    }
+    if (m_platform == NULL)
+        return false;
+    QAdMobAd *newAd = m_platform->createAdFromResponse(parsedResult);
+    if (newAd == NULL) {
+        return false;
+    } else {
+        newAd->setParent(this);
+        setAd(newAd);
+        return true;
+    }
+}
+
+QVariant QAdMob::parseJsonResponseData( const QByteArray& aResponseData )
 {
 #ifdef QADMOB_QT4
     QJson::Parser parser;
@@ -306,18 +217,67 @@ QVariant QAdMob::parseResponseData( const QByteArray& aResponseData )
 #endif
 }
 
-void QAdMob::handleAdReady()
+void QAdMob::setStatus(QAdMob::Status arg)
 {
-    iAdReady = true;
-    emit adReceived(true);
+    if (m_status != arg) {
+        m_status = arg;
+        emit statusChanged(arg);
+    }
 }
 
-const QAdMobAd& QAdMob::ad() const
+void QAdMob::setAd(QAdMobAd *arg)
 {
-    return iAd;
+    if (m_ad != arg) {
+        delete m_ad;
+        m_ad = arg;
+        emit adChanged(arg);
+    }
 }
 
-bool QAdMob::adReady() const
+QAdMobAd *QAdMob::ad()
 {
-    return bool(iAdReady);
+    return m_ad;
+}
+
+QAdServicePlatform *QAdMob::platform() const
+{
+    return m_platform;
+}
+
+void QAdMob::setPlatform(QAdServicePlatform *arg)
+{
+    if (m_platform != arg) {
+        m_platform = arg;
+        emit platformChanged(arg);
+    }
+}
+
+void QAdMob::fetchAdFromUrl(const QUrl &url, const QByteArray &data)
+{
+    if (m_reply) {
+        m_reply->abort();
+        delete m_reply;
+        m_reply = NULL;
+    }
+    if (url.isValid() == false) {
+        setStatus(Error);
+        return;
+    }
+    setStatus(Loading);
+    QNetworkRequest request;
+    request.setUrl(url);
+    request.setRawHeader("User-Agent", kUserAgent.toUtf8());
+
+    request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
+    request.setAttribute(QNetworkRequest::CacheSaveControlAttribute, false);
+
+    QNetworkAccessManager *nam = qmlEngine(this)->networkAccessManager();
+
+    if (data.length()) {
+        m_reply = nam->post(request, data);
+    } else {
+        m_reply = nam->get(request);
+    }
+
+    QObject::connect(m_reply, SIGNAL(finished()),  this, SLOT(networkReplyFinished()));
 }
