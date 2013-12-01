@@ -8,8 +8,7 @@ class QAdPlatformAdfonic : public QAdPlatform
 public:
     QAdPlatformAdfonic();
 
-    virtual QUrl prepareUrlForRequest(const QAdService& adService) Q_DECL_OVERRIDE;
-    virtual QByteArray preparePostDataForRequest(const QAdService& adService) Q_DECL_OVERRIDE;
+    virtual bool prepareRequest(const QAdService &adService, QUrl &url, QByteArray &bodyData) Q_DECL_OVERRIDE;
     virtual QAd *createAdFromResponse(const QVariant& response) Q_DECL_OVERRIDE;
 };
 

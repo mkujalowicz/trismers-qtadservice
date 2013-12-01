@@ -9,37 +9,50 @@ QAdPlatformAdfonic::QAdPlatformAdfonic()
 {
 }
 
-QUrl QAdPlatformAdfonic::prepareUrlForRequest(const QAdService &adService)
+bool QAdPlatformAdfonic::prepareRequest(const QAdService &adService, QUrl &url, QByteArray &/*bodyData*/)
 {
     if (adService.slotId().length() == 0)
-        return QUrl();
+        return false;
 
-    QUrl url(QString(kAdfonicUrlFormat).arg(adService.slotId()));
+    url = QString(kAdfonicUrlFormat).arg(adService.slotId());
     QUrlQuery query;
 
-    query.addQueryItem("r.id", "58989235844-232");
+    query.addQueryItem("r.id", "58989235844-232"); //TODO: real device id
     query.addQueryItem("s.test", adService.testMode() ? "1": "0");
     query.addQueryItem("t.markup", "0");
     query.addQueryItem("t.format", "json");
     url.setQuery(query);
-    return url;
-}
-
-QByteArray QAdPlatformAdfonic::preparePostDataForRequest(const QAdService &)
-{
-    return QByteArray();
+    return true;
 }
 
 QAd *QAdPlatformAdfonic::createAdFromResponse(const QVariant &response)
 {
     QUrl url;
     QUrl imageUrl;
+    QAd::Format adFormat = QAd::Null;
 
     if (response.type() != QVariant::Map)
         return NULL;
     QVariantMap map = response.toMap();
     if (map.value("status") != QString("success"))
         return NULL;
+
+    QVariant format = map.value("format");
+    if (format.type() == QVariant::String) {
+        QString formatString = format.toString();
+
+        if (formatString == "banner") {
+            adFormat = QAd::Banner;
+        } else {
+            if (formatString == "text") {
+                adFormat = QAd::Text;
+            } else {
+                if (formatString.indexOf("image") == 0) {
+                    adFormat = QAd::Image;
+                }
+            }
+        }
+    }
 
     QVariant destination = map.value("destination");
     if (destination.type() == QVariant::Map) {
