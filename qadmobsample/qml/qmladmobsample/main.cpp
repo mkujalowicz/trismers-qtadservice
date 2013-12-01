@@ -1,8 +1,8 @@
 #include <QtGui/QGuiApplication>
 #include <QtQml>
 #include "qtquick2applicationviewer.h"
-#include "qadmob_plugin.h"
-#include "qadmob.h"
+#include "qadservice_plugin.h"
+#include "qadservice.h"
 
 Q_IMPORT_PLUGIN(QAdMobPlugin)
 

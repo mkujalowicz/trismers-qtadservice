@@ -1,4 +1,4 @@
-#include "qadmobad.h"
+#include "qad.h"
 
 QAd::QAd(QObject *parent) :
     QObject(parent)

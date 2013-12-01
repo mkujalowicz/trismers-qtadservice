@@ -25,7 +25,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
-#include "qadmobad.h"
+#include "qad.h"
 #include "qadserviceplatform.h"
 
 #define Q_ADMOB_EXPORT

@@ -19,7 +19,7 @@
 #include <QSize>
 #include <QQmlEngine>
 
-#include "qadmob.h"
+#include "qadservice.h"
 #ifdef QADMOB_QT4
 #include "parser.h"
 #else

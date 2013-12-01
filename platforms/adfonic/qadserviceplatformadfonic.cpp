@@ -1,7 +1,7 @@
 #include "qadserviceplatformadfonic.h"
 #include <QUrlQuery>
-#include "qadmobad.h"
-#include "qadmob.h"
+#include "qad.h"
+#include "qadservice.h"
 
 const QString kAdfonicUrlFormat = "http://adfonic.net/ad/%1";
 

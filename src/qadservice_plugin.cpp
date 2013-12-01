@@ -1,10 +1,10 @@
-#include "qadmob_plugin.h"
+#include "qadservice_plugin.h"
 #ifdef QADMOB_QT4
 #include <QDeclarative.h>
 #else
 #include <QtQml/qqml.h>
 #endif
-#include "qadmob.h"
+#include "qadservice.h"
 #include "adfonic/qadserviceplatformadfonic.h"
 
 void QAdMobPlugin::registerTypes(const char *uri) {

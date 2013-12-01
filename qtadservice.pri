@@ -7,16 +7,15 @@ INCLUDEPATH += \
     $$PWD/platforms
 
 SOURCES += \
-    $$PWD/src/qadmob.cpp \
-    $$PWD/src/qadmob_plugin.cpp \
-    $$PWD/src/qadmobad.cpp \
+    $$PWD/src/qadservice.cpp \
+    $$PWD/src/qadservice_plugin.cpp \
+    $$PWD/src/qad.cpp \
     $$PWD/src/qadserviceplatform.cpp \
     $$PWD/platforms/adfonic/qadserviceplatformadfonic.cpp
 
 HEADERS += \
-    $$PWD/inc/qadmob.h \
-    $$PWD/inc/qadmob_plugin.h \
-    $$PWD/inc/qadmobad.h \
+    $$PWD/inc/qadservice.h \
+    $$PWD/inc/qadservice_plugin.h \
+    $$PWD/inc/qad.h \
     $$PWD/inc/qadserviceplatform.h \
     $$PWD/platforms/adfonic/qadserviceplatformadfonic.h
-
