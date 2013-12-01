@@ -239,12 +239,12 @@ QAd *QAdService::ad()
     return m_ad;
 }
 
-QAdServicePlatform *QAdService::platform() const
+QAdPlatform *QAdService::platform() const
 {
     return m_platform;
 }
 
-void QAdService::setPlatform(QAdServicePlatform *arg)
+void QAdService::setPlatform(QAdPlatform *arg)
 {
     if (m_platform != arg) {
         m_platform = arg;

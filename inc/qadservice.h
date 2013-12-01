@@ -26,7 +26,7 @@
 #include <QNetworkReply>
 
 #include "qad.h"
-#include "qadserviceplatform.h"
+#include "qadplatform.h"
 
 #define Q_ADSERVICE_EXPORT
 
@@ -44,7 +44,7 @@ class Q_ADSERVICE_EXPORT QAdService : public QObject
 
     Q_PROPERTY(QAd *ad READ ad NOTIFY adChanged)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
-    Q_PROPERTY(QAdServicePlatform *platform READ platform WRITE setPlatform NOTIFY platformChanged)
+    Q_PROPERTY(QAdPlatform *platform READ platform WRITE setPlatform NOTIFY platformChanged)
 
     Q_PROPERTY(QString slotId READ slotId WRITE setSlotId NOTIFY slotIdChanged)
     Q_PROPERTY(QString keywords READ keywords WRITE setKeywords RESET resetKeywords NOTIFY keywordsChanged)
@@ -81,7 +81,7 @@ signals:
 
     void adChanged(QAd * arg);
 
-    void platformChanged(QAdServicePlatform * arg);
+    void platformChanged(QAdPlatform * arg);
 
 public slots:
     /**
@@ -147,8 +147,8 @@ public:
 
     QAd *ad();
 
-    QAdServicePlatform * platform() const;
-    void setPlatform(QAdServicePlatform * arg);
+    QAdPlatform * platform() const;
+    void setPlatform(QAdPlatform * arg);
 
 private:
     void fetchAdFromUrl(const QUrl &, const QByteArray&);
@@ -159,7 +159,7 @@ private:
 private:
     Status m_status;
     QNetworkReply *m_reply;
-    QAdServicePlatform * m_platform;
+    QAdPlatform * m_platform;
 
     QString     m_slotId;
     QString     m_keywords;

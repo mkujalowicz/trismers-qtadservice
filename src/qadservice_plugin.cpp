@@ -5,13 +5,13 @@
 #include <QtQml/qqml.h>
 #endif
 #include "qadservice.h"
-#include "adfonic/qadserviceplatformadfonic.h"
+#include "adfonic/qadplatformadfonic.h"
 
 void QAdServicePlugin::registerTypes(const char *uri) {
     // @uri QtAdService
     qmlRegisterType<QAdService>(uri, 1, 0, "AdService");
     qmlRegisterType<QAd>();
-    qmlRegisterType<QAdServicePlatformAdfonic>(uri, 1, 0, "AdServicePlatformAdfonic");
+    qmlRegisterType<QAdPlatformAdfonic>(uri, 1, 0, "AdPlatformAdfonic");
 }
 
 #ifdef QADSERVICE_QT4

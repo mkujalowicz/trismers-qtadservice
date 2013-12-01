@@ -1,16 +1,16 @@
-#ifndef QADSERVICEPLATFORMADFONIC_H
-#define QADSERVICEPLATFORMADFONIC_H
+#ifndef QADPLATFORMADFONIC_H
+#define QADPLATFORMADFONIC_H
 
-#include "qadserviceplatform.h"
+#include "qadplatform.h"
 
-class QAdServicePlatformAdfonic : public QAdServicePlatform
+class QAdPlatformAdfonic : public QAdPlatform
 {
 public:
-    QAdServicePlatformAdfonic();
+    QAdPlatformAdfonic();
 
     virtual QUrl prepareUrlForRequest(const QAdService& adService) Q_DECL_OVERRIDE;
     virtual QByteArray preparePostDataForRequest(const QAdService& adService) Q_DECL_OVERRIDE;
     virtual QAd *createAdFromResponse(const QVariant& response) Q_DECL_OVERRIDE;
 };
 
-#endif // QADSERVICEPLATFORMADFONIC_H
+#endif // QADPLATFORMADFONIC_H

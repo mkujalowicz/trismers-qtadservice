@@ -1,15 +1,15 @@
-#include "qadserviceplatformadfonic.h"
+#include "qadplatformadfonic.h"
 #include <QUrlQuery>
 #include "qad.h"
 #include "qadservice.h"
 
 const QString kAdfonicUrlFormat = "http://adfonic.net/ad/%1";
 
-QAdServicePlatformAdfonic::QAdServicePlatformAdfonic()
+QAdPlatformAdfonic::QAdPlatformAdfonic()
 {
 }
 
-QUrl QAdServicePlatformAdfonic::prepareUrlForRequest(const QAdService &adService)
+QUrl QAdPlatformAdfonic::prepareUrlForRequest(const QAdService &adService)
 {
     if (adService.slotId().length() == 0)
         return QUrl();
@@ -25,12 +25,12 @@ QUrl QAdServicePlatformAdfonic::prepareUrlForRequest(const QAdService &adService
     return url;
 }
 
-QByteArray QAdServicePlatformAdfonic::preparePostDataForRequest(const QAdService &)
+QByteArray QAdPlatformAdfonic::preparePostDataForRequest(const QAdService &)
 {
     return QByteArray();
 }
 
-QAd *QAdServicePlatformAdfonic::createAdFromResponse(const QVariant &response)
+QAd *QAdPlatformAdfonic::createAdFromResponse(const QVariant &response)
 {
     QUrl url;
     QUrl imageUrl;

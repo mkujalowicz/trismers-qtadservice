@@ -1,16 +1,16 @@
-#ifndef QADSERVICEPLATFORM_H
-#define QADSERVICEPLATFORM_H
+#ifndef QADPLATFORM_H
+#define QADPLATFORM_H
 
 #include <QObject>
 
 class QAdService;
 class QAd;
 
-class QAdServicePlatform : public QObject
+class QAdPlatform : public QObject
 {
     Q_OBJECT
 public:
-    explicit QAdServicePlatform(QObject *parent = 0);
+    explicit QAdPlatform(QObject *parent = 0);
     virtual QUrl prepareUrlForRequest(const QAdService& adService) = 0;
     virtual QByteArray preparePostDataForRequest(const QAdService& adService) = 0;
     virtual QAd *createAdFromResponse(const QVariant& response) = 0;
@@ -21,4 +21,4 @@ public slots:
 
 };
 
-#endif // QADSERVICEPLATFORM_H
+#endif // QADPLATFORM_H

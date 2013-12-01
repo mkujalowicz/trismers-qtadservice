@@ -41,7 +41,7 @@ Rectangle {
         id: adService
         slotId: "PUT_YOUR_SLOT_ID_HERE"
         testMode: true
-        platform: AdServicePlatformAdfonic {
+        platform: AdPlatformAdfonic {
 
         }
     }
