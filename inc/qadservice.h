@@ -143,7 +143,7 @@ public:
     bool testMode() const;
 
     QString adLanguage() const;
-    void setAdLanguage(const QString& );
+    void setAdLanguage(const QString&);
 
     QAd *ad();
 
@@ -158,15 +158,17 @@ private:
     void setAd(QAd *);
 private:
     Status m_status;
-    QNetworkReply *m_reply;
-    QAdPlatform * m_platform;
+    QNetworkReply   *m_reply;
+    QAdPlatform     *m_platform;
 
-    QString     m_slotId;
-    QString     m_keywords;
-    AdTypeHint  m_adTypeHint;
-    bool        m_testMode;
-    QString     m_adLanguage;
-    QAd    *m_ad;
+    QString         m_slotId;
+    QString         m_keywords;
+    AdTypeHint      m_adTypeHint;
+    bool            m_testMode;
+    QString         m_adLanguage;
+    QAd             *m_ad;
+    QByteArray      m_bodyData;
+    int             m_redirectCount;
 };
 
 #endif // QADSERVICE_H

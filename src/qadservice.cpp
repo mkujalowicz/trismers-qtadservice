@@ -29,11 +29,11 @@
 #define QADSERVICE_MAXIMUM_REDIRECT_RECURSION 4
 
 // CONSTANTS
-static const QString kUserAgent ="Mozilla/5.0 (SymbianOS/9.4; Series60/5.0 NokiaN97-1/12.0.024; Profile/MIDP-2.1 Configuration/CLDC-1.1; en-us) AppleWebKit/525 (KHTML, like Gecko) BrowserNG/7.1.12344";
+static const QString kUserAgent ="QtAdService/1.0 (Qt/5.2; http://qt-project.org)";
 
 QAdService::QAdService(QObject *parent) :
     QObject(parent), m_status(Null), m_reply(NULL), m_platform(NULL), m_adTypeHint(AdTypeHintText),
-    m_testMode ( false ), m_ad(new QAd(this))
+    m_testMode ( false ), m_ad(new QAd(this)), m_redirectCount(0)
 {
 }
 
@@ -136,26 +136,33 @@ void QAdService::fetchAd()
     if (m_platform == NULL) {
         setStatus(Error);
     } else {
-        fetchAdFromUrl(m_platform->prepareUrlForRequest(*this), m_platform->preparePostDataForRequest(*this));
+        m_redirectCount = 0;
+        m_bodyData.clear();
+        QUrl url;
+        if (!m_platform->prepareRequest(*this, url, m_bodyData)) {
+            setStatus(Error);
+            return;
+        }
+        fetchAdFromUrl(url, m_bodyData);
     }
 }
 
 void QAdService::networkReplyFinished()
 {
-    int m_redirectCount = 0; //TODO: make an attribute for it
     if (m_reply) {
         m_redirectCount++;
-        if (m_redirectCount < QADSERVICE_MAXIMUM_REDIRECT_RECURSION) {
+        if (m_redirectCount <= QADSERVICE_MAXIMUM_REDIRECT_RECURSION) {
             QVariant redirect = m_reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
             if (redirect.isValid()) {
                 QUrl url = m_reply->url().resolved(redirect.toUrl());
                 m_reply->deleteLater();
                 m_reply = 0;
-                fetchAdFromUrl(url, QByteArray());
+                fetchAdFromUrl(url, m_bodyData);
                 return;
             }
         }
         m_redirectCount = 0;
+        m_bodyData.clear();
 
         if (m_reply->error() == QNetworkReply::NoError) {
             QByteArray responseData = m_reply->readAll();
@@ -270,6 +277,7 @@ void QAdService::fetchAdFromUrl(const QUrl &url, const QByteArray &data)
 
     request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
     request.setAttribute(QNetworkRequest::CacheSaveControlAttribute, false);
+    request.setAttribute(QNetworkRequest::HttpPipeliningAllowedAttribute, true);
 
     QNetworkAccessManager *nam = qmlEngine(this)->networkAccessManager();
 
