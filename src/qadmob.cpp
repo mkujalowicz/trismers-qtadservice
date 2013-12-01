@@ -31,13 +31,13 @@
 // CONSTANTS
 static const QString kUserAgent ="Mozilla/5.0 (SymbianOS/9.4; Series60/5.0 NokiaN97-1/12.0.024; Profile/MIDP-2.1 Configuration/CLDC-1.1; en-us) AppleWebKit/525 (KHTML, like Gecko) BrowserNG/7.1.12344";
 
-QAdMob::QAdMob(QObject *parent) :
+QAdService::QAdService(QObject *parent) :
     QObject(parent), m_status(Null), m_reply(NULL), m_platform(NULL), m_adTypeHint(AdTypeHintText),
-    m_testMode ( false ), m_ad(new QAdMobAd(this))
+    m_testMode ( false ), m_ad(new QAd(this))
 {
 }
 
-QAdMob::~QAdMob()
+QAdService::~QAdService()
 {
     if (m_reply) {
         m_reply->abort();
@@ -46,13 +46,13 @@ QAdMob::~QAdMob()
     }
 }
 
-QAdMob::Status QAdMob::status() const
+QAdService::Status QAdService::status() const
 {
     return m_status;
 }
 
 
-void QAdMob::setPublisherId(const QString& arg)
+void QAdService::setPublisherId(const QString& arg)
 {
     if (m_publisherId != arg) {
         m_publisherId = arg;
@@ -60,12 +60,12 @@ void QAdMob::setPublisherId(const QString& arg)
     }
 }
 
-QString QAdMob::publisherId() const
+QString QAdService::publisherId() const
 {
     return m_publisherId;
 }
 
-void QAdMob::setKeywords(const QString& arg)
+void QAdService::setKeywords(const QString& arg)
 {
     if (m_keywords != arg) {
         m_keywords = arg;
@@ -73,12 +73,12 @@ void QAdMob::setKeywords(const QString& arg)
     }
 }
 
-QString QAdMob::keywords() const
+QString QAdService::keywords() const
 {
     return m_keywords;
 }
 
-void QAdMob::resetKeywords()
+void QAdService::resetKeywords()
 {
     if (m_keywords.length()) {
         m_keywords.clear();
@@ -86,7 +86,7 @@ void QAdMob::resetKeywords()
     }
 }
 
-void QAdMob::setAdTypeHint( QAdMob::AdTypeHint arg)
+void QAdService::setAdTypeHint( QAdService::AdTypeHint arg)
 {
     if (m_adTypeHint != arg) {
         m_adTypeHint = arg;
@@ -94,12 +94,12 @@ void QAdMob::setAdTypeHint( QAdMob::AdTypeHint arg)
     }
 }
 
-QAdMob::AdTypeHint QAdMob::adTypeHint() const
+QAdService::AdTypeHint QAdService::adTypeHint() const
 {
     return m_adTypeHint;
 }
 
-void QAdMob::setTestMode(bool arg)
+void QAdService::setTestMode(bool arg)
 {
     if (m_testMode != arg) {
         m_testMode = arg;
@@ -107,18 +107,18 @@ void QAdMob::setTestMode(bool arg)
     }
 }
 
-bool QAdMob::testMode() const
+bool QAdService::testMode() const
 {
     return m_testMode;
 }
 
 
-QString QAdMob::adLanguage() const
+QString QAdService::adLanguage() const
 {
     return m_adLanguage;
 }
 
-void QAdMob::setAdLanguage(const QString& arg)
+void QAdService::setAdLanguage(const QString& arg)
 {
     if (m_adLanguage != arg) {
         m_adLanguage = arg;
@@ -126,7 +126,7 @@ void QAdMob::setAdLanguage(const QString& arg)
     }
 }
 
-void QAdMob::fetchAd()
+void QAdService::fetchAd()
 {
     if (m_reply) {
         m_reply->abort();
@@ -140,7 +140,7 @@ void QAdMob::fetchAd()
     }
 }
 
-void QAdMob::networkReplyFinished()
+void QAdService::networkReplyFinished()
 {
     int m_redirectCount = 0; //TODO: make an attribute for it
     if (m_reply) {
@@ -175,7 +175,7 @@ void QAdMob::networkReplyFinished()
     }
 }
 
-bool QAdMob::handleResponseData( const QByteArray& aResponseData )
+bool QAdService::handleResponseData( const QByteArray& aResponseData )
 {
     QVariant parsedResult = parseJsonResponseData(aResponseData);
     if (!parsedResult.isValid() || parsedResult.isNull()) {
@@ -183,7 +183,7 @@ bool QAdMob::handleResponseData( const QByteArray& aResponseData )
     }
     if (m_platform == NULL)
         return false;
-    QAdMobAd *newAd = m_platform->createAdFromResponse(parsedResult);
+    QAd *newAd = m_platform->createAdFromResponse(parsedResult);
     if (newAd == NULL) {
         return false;
     } else {
@@ -193,7 +193,7 @@ bool QAdMob::handleResponseData( const QByteArray& aResponseData )
     }
 }
 
-QVariant QAdMob::parseJsonResponseData( const QByteArray& aResponseData )
+QVariant QAdService::parseJsonResponseData( const QByteArray& aResponseData )
 {
 #ifdef QADMOB_QT4
     QJson::Parser parser;
@@ -217,7 +217,7 @@ QVariant QAdMob::parseJsonResponseData( const QByteArray& aResponseData )
 #endif
 }
 
-void QAdMob::setStatus(QAdMob::Status arg)
+void QAdService::setStatus(QAdService::Status arg)
 {
     if (m_status != arg) {
         m_status = arg;
@@ -225,7 +225,7 @@ void QAdMob::setStatus(QAdMob::Status arg)
     }
 }
 
-void QAdMob::setAd(QAdMobAd *arg)
+void QAdService::setAd(QAd *arg)
 {
     if (m_ad != arg) {
         delete m_ad;
@@ -234,17 +234,17 @@ void QAdMob::setAd(QAdMobAd *arg)
     }
 }
 
-QAdMobAd *QAdMob::ad()
+QAd *QAdService::ad()
 {
     return m_ad;
 }
 
-QAdServicePlatform *QAdMob::platform() const
+QAdServicePlatform *QAdService::platform() const
 {
     return m_platform;
 }
 
-void QAdMob::setPlatform(QAdServicePlatform *arg)
+void QAdService::setPlatform(QAdServicePlatform *arg)
 {
     if (m_platform != arg) {
         m_platform = arg;
@@ -252,7 +252,7 @@ void QAdMob::setPlatform(QAdServicePlatform *arg)
     }
 }
 
-void QAdMob::fetchAdFromUrl(const QUrl &url, const QByteArray &data)
+void QAdService::fetchAdFromUrl(const QUrl &url, const QByteArray &data)
 {
     if (m_reply) {
         m_reply->abort();

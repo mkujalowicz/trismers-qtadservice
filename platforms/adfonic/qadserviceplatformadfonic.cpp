@@ -9,7 +9,7 @@ QAdServicePlatformAdfonic::QAdServicePlatformAdfonic()
 {
 }
 
-QUrl QAdServicePlatformAdfonic::prepareUrlForRequest(const QAdMob &adService)
+QUrl QAdServicePlatformAdfonic::prepareUrlForRequest(const QAdService &adService)
 {
     if (adService.publisherId().length() == 0)
         return QUrl();
@@ -25,12 +25,12 @@ QUrl QAdServicePlatformAdfonic::prepareUrlForRequest(const QAdMob &adService)
     return url;
 }
 
-QByteArray QAdServicePlatformAdfonic::preparePostDataForRequest(const QAdMob &)
+QByteArray QAdServicePlatformAdfonic::preparePostDataForRequest(const QAdService &)
 {
     return QByteArray();
 }
 
-QAdMobAd *QAdServicePlatformAdfonic::createAdFromResponse(const QVariant &response)
+QAd *QAdServicePlatformAdfonic::createAdFromResponse(const QVariant &response)
 {
     QUrl url;
     QUrl imageUrl;
@@ -60,7 +60,7 @@ QAdMobAd *QAdServicePlatformAdfonic::createAdFromResponse(const QVariant &respon
             imageUrl = QUrl(imageComponentMap.value("url").toUrl());
         }
     }
-    QAdMobAd *newAd = new QAdMobAd();
+    QAd *newAd = new QAd();
 
     newAd->setUrl(url);
     newAd->setImageUrl(imageUrl);

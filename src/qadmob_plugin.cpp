@@ -9,8 +9,8 @@
 
 void QAdMobPlugin::registerTypes(const char *uri) {
     // @uri QtAdMob
-    qmlRegisterType<QAdMob>(uri, 1, 0, "AdMob");
-    qmlRegisterType<QAdMobAd>();
+    qmlRegisterType<QAdService>(uri, 1, 0, "AdMob");
+    qmlRegisterType<QAd>();
     qmlRegisterType<QAdServicePlatformAdfonic>(uri, 1, 0, "AdServicePlatformAdfonic");
 }
 

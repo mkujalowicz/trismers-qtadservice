@@ -34,7 +34,7 @@
 /**
   * @brief Used to fetch ads from the admob servers
   */
-class Q_ADMOB_EXPORT QAdMob : public QObject
+class Q_ADMOB_EXPORT QAdService : public QObject
 {
     Q_OBJECT
 
@@ -42,7 +42,7 @@ class Q_ADMOB_EXPORT QAdMob : public QObject
     Q_ENUMS(Gender)
     Q_ENUMS(AdTypeHint)
 
-    Q_PROPERTY(QAdMobAd *ad READ ad NOTIFY adChanged)
+    Q_PROPERTY(QAd *ad READ ad NOTIFY adChanged)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
     Q_PROPERTY(QAdServicePlatform *platform READ platform WRITE setPlatform NOTIFY platformChanged)
 
@@ -79,7 +79,7 @@ signals:
 
     void adLanguageChanged(const QString &arg);
 
-    void adChanged(QAdMobAd * arg);
+    void adChanged(QAd * arg);
 
     void platformChanged(QAdServicePlatform * arg);
 
@@ -93,9 +93,9 @@ private slots:
     void networkReplyFinished ();
 
 public:
-    explicit QAdMob(QObject *parent = 0);
+    explicit QAdService(QObject *parent = 0);
 
-    ~QAdMob();
+    ~QAdService();
 
     Status status() const;
 
@@ -129,13 +129,13 @@ public:
       * @brief Used to specify what type of ad you want, a banner or a text ad
       * @param aType @see AdTypeHint
       */
-    void setAdTypeHint( QAdMob::AdTypeHint aType);
+    void setAdTypeHint( QAdService::AdTypeHint aType);
 
     /**
       * @brief returns the ad type hint you have set.
       * @returns QAdMob::AdTypeHint
       */
-    QAdMob::AdTypeHint adTypeHint() const;
+    QAdService::AdTypeHint adTypeHint() const;
 
     /**
       * @brief Used to enable test mode, if test mode is enable AdMob will always send you test ad.
@@ -146,7 +146,7 @@ public:
     QString adLanguage() const;
     void setAdLanguage(const QString& );
 
-    QAdMobAd *ad();
+    QAd *ad();
 
     QAdServicePlatform * platform() const;
     void setPlatform(QAdServicePlatform * arg);
@@ -156,7 +156,7 @@ private:
     bool handleResponseData( const QByteArray& aResponseData );
     QVariant parseJsonResponseData( const QByteArray& aResponseData );
     void setStatus(Status);
-    void setAd(QAdMobAd *);
+    void setAd(QAd *);
 private:
     Status m_status;
     QNetworkReply *m_reply;
@@ -167,7 +167,7 @@ private:
     AdTypeHint  m_adTypeHint;
     bool        m_testMode;
     QString     m_adLanguage;
-    QAdMobAd    *m_ad;
+    QAd    *m_ad;
 };
 
 #endif // QADMOB_H

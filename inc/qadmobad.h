@@ -7,7 +7,7 @@
 /**
  * @brief Represents an Ad
  */
-class QAdMobAd : public QObject
+class QAd : public QObject
 {
     Q_OBJECT
 
@@ -23,7 +23,7 @@ signals:
 public:
     enum Format {Banner, Text, Image};
 
-    explicit QAdMobAd(QObject *parent = 0);
+    explicit QAd(QObject *parent = 0);
     const QUrl &url() const
     {
         return m_url;

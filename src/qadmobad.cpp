@@ -1,11 +1,11 @@
 #include "qadmobad.h"
 
-QAdMobAd::QAdMobAd(QObject *parent) :
+QAd::QAd(QObject *parent) :
     QObject(parent)
 {
 }
 
-void QAdMobAd::setUrl(const QUrl &arg)
+void QAd::setUrl(const QUrl &arg)
 {
     if (m_url != arg) {
         m_url = arg;
@@ -13,7 +13,7 @@ void QAdMobAd::setUrl(const QUrl &arg)
     }
 }
 
-void QAdMobAd::setImageUrl(QUrl arg)
+void QAd::setImageUrl(QUrl arg)
 {
     if (m_imageUrl != arg) {
         m_imageUrl = arg;

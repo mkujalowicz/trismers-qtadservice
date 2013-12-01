@@ -10,7 +10,7 @@ QML_IMPORT_PATH =
 SOURCES += main.cpp
 
 DEFINES += QT_STATICPLUGIN
-include(../../../qadmob.pri)
+include(../../../qtadservice.pri)
 
 # Installation path
 # target.path =
