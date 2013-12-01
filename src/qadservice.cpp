@@ -52,17 +52,17 @@ QAdService::Status QAdService::status() const
 }
 
 
-void QAdService::setPublisherId(const QString& arg)
+void QAdService::setSlotId(const QString& arg)
 {
-    if (m_publisherId != arg) {
-        m_publisherId = arg;
-        emit publisherIdChanged(arg);
+    if (m_slotId != arg) {
+        m_slotId = arg;
+        emit slotIdChanged(arg);
     }
 }
 
-QString QAdService::publisherId() const
+QString QAdService::slotId() const
 {
-    return m_publisherId;
+    return m_slotId;
 }
 
 void QAdService::setKeywords(const QString& arg)

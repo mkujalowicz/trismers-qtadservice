@@ -11,10 +11,10 @@ QAdServicePlatformAdfonic::QAdServicePlatformAdfonic()
 
 QUrl QAdServicePlatformAdfonic::prepareUrlForRequest(const QAdService &adService)
 {
-    if (adService.publisherId().length() == 0)
+    if (adService.slotId().length() == 0)
         return QUrl();
 
-    QUrl url(QString(kAdfonicUrlFormat).arg(adService.publisherId()));
+    QUrl url(QString(kAdfonicUrlFormat).arg(adService.slotId()));
     QUrlQuery query;
 
     query.addQueryItem("r.id", "58989235844-232");

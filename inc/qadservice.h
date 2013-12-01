@@ -46,7 +46,7 @@ class Q_ADSERVICE_EXPORT QAdService : public QObject
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
     Q_PROPERTY(QAdServicePlatform *platform READ platform WRITE setPlatform NOTIFY platformChanged)
 
-    Q_PROPERTY(QString publisherId READ publisherId WRITE setPublisherId NOTIFY publisherIdChanged)
+    Q_PROPERTY(QString slotId READ slotId WRITE setSlotId NOTIFY slotIdChanged)
     Q_PROPERTY(QString keywords READ keywords WRITE setKeywords RESET resetKeywords NOTIFY keywordsChanged)
     Q_PROPERTY(AdTypeHint adTypeHint READ adTypeHint WRITE setAdTypeHint NOTIFY adTypeHintChanged)
     Q_PROPERTY(bool testMode READ testMode WRITE setTestMode NOTIFY testModeChanged)
@@ -69,7 +69,7 @@ public:
 signals:
     void statusChanged(Status);
 
-    void publisherIdChanged(const QString &arg);
+    void slotIdChanged(const QString &arg);
 
     void keywordsChanged(const QString &arg);
 
@@ -100,15 +100,14 @@ public:
     Status status() const;
 
     /**
-      * @brief Set the publisher Id
-      * @param aPublisherId your publisher id
+      * @brief Set the slot Id
       */
-    void setPublisherId(const QString& aPublisherId);
+    void setSlotId(const QString&);
 
     /**
       * @returns QString, your publisher id
       */
-    QString publisherId() const;
+    QString slotId() const;
 
     /**
       * @brief Sets the keywords, AdService uses show targeted ads, keywords are seperated by spaces
@@ -162,7 +161,7 @@ private:
     QNetworkReply *m_reply;
     QAdServicePlatform * m_platform;
 
-    QString     m_publisherId;
+    QString     m_slotId;
     QString     m_keywords;
     AdTypeHint  m_adTypeHint;
     bool        m_testMode;
