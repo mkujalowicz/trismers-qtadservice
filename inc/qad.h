@@ -1,5 +1,5 @@
-#ifndef QADMOBAD_H
-#define QADMOBAD_H
+#ifndef QAD_H
+#define QAD_H
 
 #include <QObject>
 #include <QUrl>
@@ -42,4 +42,4 @@ private:
     QUrl m_imageUrl;
 };
 
-#endif // QADMOBAD_H
+#endif // QAD_H

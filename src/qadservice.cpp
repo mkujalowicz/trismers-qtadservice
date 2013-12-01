@@ -20,13 +20,13 @@
 #include <QQmlEngine>
 
 #include "qadservice.h"
-#ifdef QADMOB_QT4
+#ifdef QADSERVICE_QT4
 #include "parser.h"
 #else
 #include <QJsonDocument>
 #endif
 
-#define QADMOB_MAXIMUM_REDIRECT_RECURSION 4
+#define QADSERVICE_MAXIMUM_REDIRECT_RECURSION 4
 
 // CONSTANTS
 static const QString kUserAgent ="Mozilla/5.0 (SymbianOS/9.4; Series60/5.0 NokiaN97-1/12.0.024; Profile/MIDP-2.1 Configuration/CLDC-1.1; en-us) AppleWebKit/525 (KHTML, like Gecko) BrowserNG/7.1.12344";
@@ -145,7 +145,7 @@ void QAdService::networkReplyFinished()
     int m_redirectCount = 0; //TODO: make an attribute for it
     if (m_reply) {
         m_redirectCount++;
-        if (m_redirectCount < QADMOB_MAXIMUM_REDIRECT_RECURSION) {
+        if (m_redirectCount < QADSERVICE_MAXIMUM_REDIRECT_RECURSION) {
             QVariant redirect = m_reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
             if (redirect.isValid()) {
                 QUrl url = m_reply->url().resolved(redirect.toUrl());
@@ -195,7 +195,7 @@ bool QAdService::handleResponseData( const QByteArray& aResponseData )
 
 QVariant QAdService::parseJsonResponseData( const QByteArray& aResponseData )
 {
-#ifdef QADMOB_QT4
+#ifdef QADSERVICE_QT4
     QJson::Parser parser;
     bool ok;
 

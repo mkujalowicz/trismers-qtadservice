@@ -13,8 +13,8 @@
  * limitations under the License.
 */
 
-#ifndef QADMOB_H
-#define QADMOB_H
+#ifndef QADSERVICE_H
+#define QADSERVICE_H
 
 #include <QtQml/qqml.h>
 #include <QObject>
@@ -28,13 +28,13 @@
 #include "qad.h"
 #include "qadserviceplatform.h"
 
-#define Q_ADMOB_EXPORT
+#define Q_ADSERVICE_EXPORT
 
 
 /**
-  * @brief Used to fetch ads from the admob servers
+  * @brief Used to fetch ads from the ad platform
   */
-class Q_ADMOB_EXPORT QAdService : public QObject
+class Q_ADSERVICE_EXPORT QAdService : public QObject
 {
     Q_OBJECT
 
@@ -57,7 +57,7 @@ public:
     enum Status { Null = 0, Ready, Loading, Error };
 
     /**
-      * @brief Used to specify the gender of th use. Used to for better ad targetting by AdMob
+      * @brief Used to specify the gender of th use. Used to for better ad targetting by AdService
       */
     enum Gender { GenderUnknown = 0, GenderMale , GenderFemale };
 
@@ -100,7 +100,7 @@ public:
     Status status() const;
 
     /**
-      * @brief Set the publisher Id, see AdMob pages for your publisher id
+      * @brief Set the publisher Id
       * @param aPublisherId your publisher id
       */
     void setPublisherId(const QString& aPublisherId);
@@ -111,7 +111,7 @@ public:
     QString publisherId() const;
 
     /**
-      * @brief Sets the keywords, AdMob uses show targeted ads, keywords are seperated by spaces
+      * @brief Sets the keywords, AdService uses show targeted ads, keywords are seperated by spaces
       */
     void setKeywords(const QString&);
 
@@ -133,12 +133,12 @@ public:
 
     /**
       * @brief returns the ad type hint you have set.
-      * @returns QAdMob::AdTypeHint
+      * @returns QAdService::AdTypeHint
       */
     QAdService::AdTypeHint adTypeHint() const;
 
     /**
-      * @brief Used to enable test mode, if test mode is enable AdMob will always send you test ad.
+      * @brief Used to enable test mode, if test mode is enabled, the ad service will always send you a test ad.
       */
     void setTestMode(bool aMode);
     bool testMode() const;
@@ -170,4 +170,4 @@ private:
     QAd    *m_ad;
 };
 
-#endif // QADMOB_H
+#endif // QADSERVICE_H

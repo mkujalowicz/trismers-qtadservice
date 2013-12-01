@@ -1,28 +1,28 @@
-#ifndef QADMOB_PLUGIN_H
-#define QADMOB_PLUGIN_H
+#ifndef QADSERVICE_PLUGIN_H
+#define QADSERVICE_PLUGIN_H
 
 #include <QtGlobal>
 
-#ifdef QADMOB_QT4
+#ifdef QADSERVICE_QT4
 #include <QtDeclarative/QDeclarativeExtensionPlugin>
 #else
 #include <QtQml/QQmlExtensionPlugin>
 #endif
 
-class QAdMobPlugin: public
-#ifdef QADMOB_QT4
+class QAdServicePlugin: public
+#ifdef QADSERVICE_QT4
        QDeclarativeExtensionPlugin
 #else
        QQmlExtensionPlugin
 #endif
 {
     Q_OBJECT
-#ifndef QADMOB_QT4
+#ifndef QADSERVICE_QT4
     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface" FILE "plugin.json")
 #endif
 public:
     void registerTypes(const char *uri);
 };
 
-#endif // QADMOB_PLUGIN_H
+#endif // QADSERVICE_PLUGIN_H
 
