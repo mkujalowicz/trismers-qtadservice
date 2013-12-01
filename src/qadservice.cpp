@@ -15,6 +15,8 @@
 
 #include <QStringList>
 #include <QNetworkRequest>
+#include <QNetworkInterface>
+#include <QCryptographicHash>
 #include <QDebug>
 #include <QSize>
 #include <QQmlEngine>
@@ -257,6 +259,23 @@ void QAdService::setPlatform(QAdPlatform *arg)
         m_platform = arg;
         emit platformChanged(arg);
     }
+}
+
+QString QAdService::uniqueId() const
+{
+    if (m_uniqueId.length() == 0) {
+        QCryptographicHash hash(QCryptographicHash::Sha1);
+
+        foreach (QNetworkInterface netInterface, QNetworkInterface::allInterfaces()) {
+            // Combine all non-loopback MAC Addresses
+            if (!(netInterface.flags() & QNetworkInterface::IsLoopBack)
+                    && netInterface.hardwareAddress().length()) {
+                hash.addData(netInterface.hardwareAddress().toLatin1());
+            }
+        }
+        m_uniqueId = hash.result().toHex();
+    }
+    return m_uniqueId;
 }
 
 void QAdService::fetchAdFromUrl(const QUrl &url, const QByteArray &data)

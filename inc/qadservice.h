@@ -150,6 +150,8 @@ public:
     QAdPlatform * platform() const;
     void setPlatform(QAdPlatform * arg);
 
+    QString uniqueId() const;
+
 private:
     void fetchAdFromUrl(const QUrl &, const QByteArray&);
     bool handleResponseData( const QByteArray& aResponseData );
@@ -169,6 +171,7 @@ private:
     QAd             *m_ad;
     QByteArray      m_bodyData;
     int             m_redirectCount;
+    mutable QString m_uniqueId;
 };
 
 #endif // QADSERVICE_H
