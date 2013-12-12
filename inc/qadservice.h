@@ -153,9 +153,10 @@ public:
     QString uniqueId() const;
 
 private:
-    void fetchAdFromUrl(const QUrl &, const QByteArray&);
-    bool handleResponseData( const QByteArray& aResponseData );
-    QVariant parseJsonResponseData( const QByteArray& aResponseData );
+    void fetchAdFromUrl(const QUrl &, const QByteArray &);
+    bool handleResponseData(const QByteArray &aResponseData, const QByteArray &mimeType);
+    QVariant parseJsonResponseData(const QByteArray &aResponseData);
+    QVariant parseXMLResponseData(const QByteArray& aResponseData);
     void setStatus(Status);
     void setAd(QAd *);
 private:

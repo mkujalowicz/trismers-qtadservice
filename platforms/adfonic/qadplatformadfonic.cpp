@@ -3,7 +3,7 @@
 #include "qad.h"
 #include "qadservice.h"
 
-const QString kAdfonicUrlFormat = "http://adfonic.net/ad/%1";
+const char * kAdfonicUrlFormat = "http://adfonic.net/ad/%1";
 
 QAdPlatformAdfonic::QAdPlatformAdfonic()
 {

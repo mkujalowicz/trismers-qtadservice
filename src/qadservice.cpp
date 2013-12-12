@@ -20,6 +20,7 @@
 #include <QDebug>
 #include <QSize>
 #include <QQmlEngine>
+#include <QDomDocument>
 
 #include "qadservice.h"
 #ifdef QADSERVICE_QT4
@@ -168,9 +169,10 @@ void QAdService::networkReplyFinished()
 
         if (m_reply->error() == QNetworkReply::NoError) {
             QByteArray responseData = m_reply->readAll();
+            QVariant mimeType = m_reply->header(QNetworkRequest::ContentTypeHeader);
             m_reply->deleteLater();
             m_reply = 0;
-            bool ok = handleResponseData(responseData);
+            bool ok = handleResponseData(responseData, mimeType.toByteArray());
             if (ok) {
                 setStatus(Ready);
             } else {
@@ -184,9 +186,17 @@ void QAdService::networkReplyFinished()
     }
 }
 
-bool QAdService::handleResponseData( const QByteArray& aResponseData )
+bool QAdService::handleResponseData(const QByteArray &aResponseData, const QByteArray &mimeType)
 {
-    QVariant parsedResult = parseJsonResponseData(aResponseData);
+    QVariant parsedResult = QVariant::Invalid;
+
+    if (mimeType.contains("json")) {
+        parsedResult = parseJsonResponseData(aResponseData);
+    } else {
+        if (mimeType.contains("xml")) {
+            parsedResult = parseXMLResponseData(aResponseData);
+        }
+    }
     if (!parsedResult.isValid() || parsedResult.isNull()) {
         return false;
     }
@@ -202,7 +212,7 @@ bool QAdService::handleResponseData( const QByteArray& aResponseData )
     }
 }
 
-QVariant QAdService::parseJsonResponseData( const QByteArray& aResponseData )
+QVariant QAdService::parseJsonResponseData(const QByteArray& aResponseData)
 {
 #ifdef QADSERVICE_QT4
     QJson::Parser parser;
@@ -224,6 +234,39 @@ QVariant QAdService::parseJsonResponseData( const QByteArray& aResponseData )
     }
     return parser.toVariant();
 #endif
+}
+
+static QVariant domElementToVariant(const QDomElement &element)
+{
+    QVariantMap variantMap;
+
+    for (QDomElement child = element.firstChildElement(); !child.isNull(); child = child.nextSiblingElement()) {
+        QString key = child.nodeName();
+        QVariant value;
+
+        if (!child.firstChildElement().isNull()) {
+            value = domElementToVariant(child);
+        } else {
+            value = child.text();
+        }
+        if (key.length())
+            variantMap[key] = value;
+    }
+    if (variantMap.keys().count())
+        return variantMap;
+    else
+        return QVariant::Invalid;
+}
+
+QVariant QAdService::parseXMLResponseData(const QByteArray& aResponseData)
+{
+    QDomDocument doc;
+    if (!doc.setContent(aResponseData, true))
+        return QVariant();
+
+    QDomElement root = doc.documentElement();
+
+    return domElementToVariant(root);
 }
 
 void QAdService::setStatus(QAdService::Status arg)
