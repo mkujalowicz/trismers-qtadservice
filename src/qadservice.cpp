@@ -286,6 +286,14 @@ void QAdService::setAd(QAd *arg)
     }
 }
 
+void QAdService::setUniqueId(const QString &arg)
+{
+    if (m_uniqueId != arg) {
+        m_uniqueId = arg;
+        emit uniqueIdChanged(arg);
+    }
+}
+
 QAd *QAdService::ad()
 {
     return m_ad;
@@ -304,7 +312,7 @@ void QAdService::setPlatform(QAdPlatform *arg)
     }
 }
 
-QString QAdService::uniqueId() const
+QString QAdService::uniqueIdForRequest() const
 {
     if (m_uniqueId.length() == 0) {
         QCryptographicHash hash(QCryptographicHash::Sha1);
@@ -316,8 +324,16 @@ QString QAdService::uniqueId() const
                 hash.addData(netInterface.hardwareAddress().toLatin1());
             }
         }
-        m_uniqueId = hash.result().toHex();
+        if (m_uniqueId != hash.result().toHex()) {
+            m_uniqueId = hash.result().toHex();
+            emit uniqueIdChanged(m_uniqueId);
+        }
     }
+    return m_uniqueId;
+}
+
+QString QAdService::uniqueId() const
+{
     return m_uniqueId;
 }
 

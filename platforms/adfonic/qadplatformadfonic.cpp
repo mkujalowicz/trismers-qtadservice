@@ -1,5 +1,6 @@
 #include "qadplatformadfonic.h"
 #include <QUrlQuery>
+#include <QCoreApplication>
 #include "qad.h"
 #include "qadservice.h"
 
@@ -17,10 +18,15 @@ bool QAdPlatformAdfonic::prepareRequest(const QAdService &adService, QUrl &url, 
     url = QString(kAdfonicUrlFormat).arg(adService.slotId());
     QUrlQuery query;
 
-    query.addQueryItem("r.id", adService.uniqueId());
+    query.addQueryItem("r.id", adService.uniqueIdForRequest());
     query.addQueryItem("s.test", adService.testMode() ? "1": "0");
     query.addQueryItem("t.markup", "0");
     query.addQueryItem("t.format", "json");
+
+    QCoreApplication *app = QCoreApplication::instance();
+    QString clientId = QString("%1/%2/%3").arg(app->organizationName(), app->applicationName(), app->applicationVersion());
+    query.addQueryItem("r.client", clientId);
+
     url.setQuery(query);
     return true;
 }

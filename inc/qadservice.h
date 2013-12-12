@@ -45,6 +45,7 @@ class Q_ADSERVICE_EXPORT QAdService : public QObject
     Q_PROPERTY(QAd *ad READ ad NOTIFY adChanged)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
     Q_PROPERTY(QAdPlatform *platform READ platform WRITE setPlatform NOTIFY platformChanged)
+    Q_PROPERTY(QString uniqueId READ uniqueId WRITE setUniqueId NOTIFY uniqueIdChanged)
 
     Q_PROPERTY(QString slotId READ slotId WRITE setSlotId NOTIFY slotIdChanged)
     Q_PROPERTY(QString keywords READ keywords WRITE setKeywords RESET resetKeywords NOTIFY keywordsChanged)
@@ -82,6 +83,8 @@ signals:
     void adChanged(QAd * arg);
 
     void platformChanged(QAdPlatform * arg);
+
+    void uniqueIdChanged(const QString &arg) const;
 
 public slots:
     /**
@@ -150,7 +153,7 @@ public:
     QAdPlatform * platform() const;
     void setPlatform(QAdPlatform * arg);
 
-    QString uniqueId() const;
+    QString uniqueIdForRequest() const;
 
 private:
     void fetchAdFromUrl(const QUrl &, const QByteArray &);
@@ -159,6 +162,8 @@ private:
     QVariant parseXMLResponseData(const QByteArray& aResponseData);
     void setStatus(Status);
     void setAd(QAd *);
+    QString uniqueId() const;
+    void setUniqueId(const QString &);
 private:
     Status m_status;
     QNetworkReply   *m_reply;
@@ -172,7 +177,7 @@ private:
     QAd             *m_ad;
     QByteArray      m_bodyData;
     int             m_redirectCount;
-    mutable QString m_uniqueId;
+    mutable QString         m_uniqueId;
 };
 
 #endif // QADSERVICE_H
