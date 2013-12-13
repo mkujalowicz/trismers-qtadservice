@@ -18,7 +18,7 @@ bool QAdPlatformAdfonic::prepareRequest(const QAdService &adService, QUrl &url, 
     url = QString(kAdfonicUrlFormat).arg(adService.slotId());
     QUrlQuery query;
 
-    query.addQueryItem("r.id", adService.uniqueIdForRequest());
+    query.addQueryItem("r.id", adService.trackingId().length() ? adService.trackingId(): adService.uniqueId());
     query.addQueryItem("s.test", adService.testMode() ? "1": "0");
     query.addQueryItem("t.markup", "0");
     query.addQueryItem("t.format", "json");
