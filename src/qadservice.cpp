@@ -32,7 +32,7 @@
 #define QADSERVICE_MAXIMUM_REDIRECT_RECURSION 4
 
 // CONSTANTS
-static const QString kUserAgent ="QtAdService/1.0 (Qt/5.2; http://qt-project.org)";
+static const QString kUserAgentFormat ="Mozilla/5.0 (X11; Linux x86_64; %1; rv:2.0.1) Gecko/20100101 Firefox/4.0.1";
 
 QAdService::QAdService(QObject *parent) :
     QObject(parent), m_status(Null), m_reply(NULL), m_platform(NULL), m_adTypeHint(AdTypeHintText),
@@ -240,11 +240,21 @@ static QVariant domElementToVariant(const QDomElement &element)
 {
     QVariantMap variantMap;
 
+    QDomNamedNodeMap attributesMap = element.attributes();
+
+    for (qint32 index = 0; index < attributesMap.count(); index++) {
+        QDomAttr attribute = attributesMap.item(index).toAttr();
+        QString key = attribute.nodeName();
+        QVariant value = attribute.value();
+
+        if (key.length())
+            variantMap[key] = value;
+    }
     for (QDomElement child = element.firstChildElement(); !child.isNull(); child = child.nextSiblingElement()) {
         QString key = child.nodeName();
         QVariant value;
 
-        if (!child.firstChildElement().isNull()) {
+        if (!child.firstChildElement().isNull() || child.attributes().count()) {
             value = domElementToVariant(child);
         } else {
             value = child.text();
@@ -252,10 +262,11 @@ static QVariant domElementToVariant(const QDomElement &element)
         if (key.length())
             variantMap[key] = value;
     }
-    if (variantMap.keys().count())
+    if (variantMap.keys().count()) {
         return variantMap;
-    else
+    } else {
         return QVariant::Invalid;
+    }
 }
 
 QVariant QAdService::parseXMLResponseData(const QByteArray& aResponseData)
@@ -286,11 +297,11 @@ void QAdService::setAd(QAd *arg)
     }
 }
 
-void QAdService::setUniqueId(const QString &arg)
+void QAdService::setTrackingId(const QString &arg)
 {
-    if (m_uniqueId != arg) {
-        m_uniqueId = arg;
-        emit uniqueIdChanged(arg);
+    if (m_trackingId != arg) {
+        m_trackingId = arg;
+        emit trackingIdChanged(arg);
     }
 }
 
@@ -312,7 +323,7 @@ void QAdService::setPlatform(QAdPlatform *arg)
     }
 }
 
-QString QAdService::uniqueIdForRequest() const
+QString QAdService::uniqueId() const
 {
     if (m_uniqueId.length() == 0) {
         QCryptographicHash hash(QCryptographicHash::Sha1);
@@ -326,15 +337,14 @@ QString QAdService::uniqueIdForRequest() const
         }
         if (m_uniqueId != hash.result().toHex()) {
             m_uniqueId = hash.result().toHex();
-            emit uniqueIdChanged(m_uniqueId);
         }
     }
     return m_uniqueId;
 }
 
-QString QAdService::uniqueId() const
+QString QAdService::trackingId() const
 {
-    return m_uniqueId;
+    return m_trackingId;
 }
 
 void QAdService::fetchAdFromUrl(const QUrl &url, const QByteArray &data)
@@ -351,8 +361,7 @@ void QAdService::fetchAdFromUrl(const QUrl &url, const QByteArray &data)
     setStatus(Loading);
     QNetworkRequest request;
     request.setUrl(url);
-    request.setRawHeader("User-Agent", kUserAgent.toUtf8());
-
+    request.setRawHeader("User-Agent", kUserAgentFormat.arg(QLocale::system().name()).toUtf8());
     request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
     request.setAttribute(QNetworkRequest::CacheSaveControlAttribute, false);
     request.setAttribute(QNetworkRequest::HttpPipeliningAllowedAttribute, true);
