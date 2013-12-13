@@ -13,6 +13,10 @@ Rectangle {
     Image {
         anchors.centerIn: parent
         source: adService.ad.imageUrl
+        MouseArea {
+            anchors.fill: parent
+            onClicked: Qt.openUrlExternally(adService.ad.url)
+        }
     }
 
     Rectangle {
@@ -41,8 +45,9 @@ Rectangle {
         id: adService
         slotId: "PUT_YOUR_SLOT_ID_HERE"
         testMode: true
+        trackingId: ad.trackingId
         platform: AdPlatformInneractive {
-
+            channelId: 947
         }
     }
 }
