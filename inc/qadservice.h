@@ -52,6 +52,8 @@ class Q_ADSERVICE_EXPORT QAdService : public QObject
     Q_PROPERTY(AdTypeHint adTypeHint READ adTypeHint WRITE setAdTypeHint NOTIFY adTypeHintChanged)
     Q_PROPERTY(bool testMode READ testMode WRITE setTestMode NOTIFY testModeChanged)
     Q_PROPERTY(QString adLanguage READ adLanguage WRITE setAdLanguage NOTIFY adLanguageChanged)
+    Q_PROPERTY(Gender visitorGender READ visitorGender WRITE setVisitorGender NOTIFY visitorGenderChanged)
+    Q_PROPERTY(int visitorAge READ visitorAge WRITE setVisitorAge NOTIFY visitorAgeChanged)
 
 public:
 
@@ -65,7 +67,7 @@ public:
     /**
       * @brief Used to specify the type of ad you want, a banner or a text ad
       */
-    enum AdTypeHint { AdTypeHintText = 0, AdTypeHintBanner };
+    enum AdTypeHint { AdTypeHintText = 0, AdTypeHintBanner, AdTypeHintInterstitial };
 
 signals:
     void statusChanged(Status);
@@ -85,6 +87,10 @@ signals:
     void platformChanged(QAdPlatform * arg);
 
     void trackingIdChanged(const QString &arg) const;
+
+    void visitorGenderChanged(Gender arg);
+
+    void visitorAgeChanged(int arg);
 
 public slots:
     /**
@@ -158,6 +164,12 @@ public:
 
     QString uniqueId() const;
 
+    int visitorAge() const;
+    void setVisitorAge(int arg);
+
+    Gender visitorGender() const;
+    void setVisitorGender(Gender arg);
+
 private:
     void fetchAdFromUrl(const QUrl &, const QByteArray &);
     bool handleResponseData(const QByteArray &aResponseData, const QByteArray &mimeType);
@@ -165,6 +177,7 @@ private:
     QVariant parseXMLResponseData(const QByteArray& aResponseData);
     void setStatus(Status);
     void setAd(QAd *);
+
 private:
     Status m_status;
     QNetworkReply   *m_reply;
@@ -180,6 +193,8 @@ private:
     int             m_redirectCount;
     QString         m_trackingId;
     mutable QString m_uniqueId;
+    Gender          m_visitorGender;
+    int             m_visitorAge;
 };
 
 #endif // QADSERVICE_H

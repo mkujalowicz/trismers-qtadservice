@@ -46,8 +46,11 @@ Rectangle {
         slotId: "PUT_YOUR_SLOT_ID_HERE"
         testMode: true
         trackingId: ad.trackingId
+        keywords: "game fun"
+        adTypeHint: AdService.AdTypeHintBanner
+        visitorAge: 3
         platform: AdPlatformInneractive {
-            channelId: 947
+            channelId: 958
         }
     }
 }

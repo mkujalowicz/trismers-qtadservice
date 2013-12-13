@@ -27,6 +27,26 @@ bool QAdPlatformInneractive::prepareRequest(const QAdService &adService, QUrl &u
     query.addQueryItem("po", QString::number(channelId()));
     query.addQueryItem("hid", adService.uniqueId());
     query.addQueryItem("cid", adService.trackingId());
+    if (adService.adTypeHint() == QAdService::AdTypeHintInterstitial) {
+        query.addQueryItem("fs", "true");
+    }
+    switch (adService.visitorGender()) {
+    case QAdService::GenderMale:
+        query.addQueryItem("g", "Male");
+        break;
+    case QAdService::GenderFemale:
+        query.addQueryItem("g", "Female");
+        break;
+    default:
+        break;
+    }
+    if (adService.visitorAge() >= 0)
+        query.addQueryItem("a", QString::number(adService.visitorAge()));
+    if (adService.keywords().length()) {
+        QStringList keywordsList = adService.keywords().split(' ', QString::SkipEmptyParts);
+        if (keywordsList.count())
+            query.addQueryItem("k", keywordsList.join(','));
+    }
     QGuiApplication *app = qobject_cast<QGuiApplication *>(QCoreApplication::instance());
     if (app) {
         QScreen *mainScreen = app->primaryScreen();

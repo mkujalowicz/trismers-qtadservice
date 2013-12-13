@@ -35,8 +35,8 @@
 static const QString kUserAgentFormat ="Mozilla/5.0 (X11; Linux x86_64; %1; rv:2.0.1) Gecko/20100101 Firefox/4.0.1";
 
 QAdService::QAdService(QObject *parent) :
-    QObject(parent), m_status(Null), m_reply(NULL), m_platform(NULL), m_adTypeHint(AdTypeHintText),
-    m_testMode ( false ), m_ad(new QAd(this)), m_redirectCount(0)
+    QObject(parent), m_status(Null), m_reply(NULL), m_platform(NULL), m_adTypeHint(AdTypeHintBanner),
+    m_testMode ( false ), m_ad(new QAd(this)), m_redirectCount(0), m_visitorGender(GenderUnknown), m_visitorAge(-1)
 {
 }
 
@@ -340,6 +340,32 @@ QString QAdService::uniqueId() const
         }
     }
     return m_uniqueId;
+}
+
+int QAdService::visitorAge() const
+{
+    return m_visitorAge;
+}
+
+void QAdService::setVisitorAge(int arg)
+{
+    if (m_visitorAge != arg) {
+        m_visitorAge = arg;
+        emit visitorAgeChanged(arg);
+    }
+}
+
+QAdService::Gender QAdService::visitorGender() const
+{
+    return m_visitorGender;
+}
+
+void QAdService::setVisitorGender(QAdService::Gender arg)
+{
+    if (m_visitorGender != arg) {
+        m_visitorGender = arg;
+        emit visitorGenderChanged(arg);
+    }
 }
 
 QString QAdService::trackingId() const
