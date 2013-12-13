@@ -28,3 +28,19 @@ void QAd::setFormat(QAd::Format arg)
         emit formatChanged(arg);
     }
 }
+
+void QAd::setText(QString arg)
+{
+    if (m_text != arg) {
+        m_text = arg;
+        emit textChanged(arg);
+    }
+}
+
+void QAd::setTrackingId(QString arg)
+{
+    if (m_trackingId != arg) {
+        m_trackingId = arg;
+        emit trackingIdChanged(arg);
+    }
+}
