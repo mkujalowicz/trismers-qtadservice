@@ -44,3 +44,11 @@ void QAd::setTrackingId(QString arg)
         emit trackingIdChanged(arg);
     }
 }
+
+void QAd::setTrackingUrl(QUrl arg)
+{
+    if (m_trackingUrl != arg) {
+        m_trackingUrl = arg;
+        emit trackingUrlChanged(arg);
+    }
+}

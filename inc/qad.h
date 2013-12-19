@@ -16,6 +16,7 @@ class QAd : public QObject
     Q_PROPERTY(Format format READ format WRITE setFormat NOTIFY formatChanged)
     Q_PROPERTY(QUrl url READ url WRITE setUrl NOTIFY urlChanged)
     Q_PROPERTY(QUrl imageUrl READ imageUrl WRITE setImageUrl NOTIFY imageUrlChanged)
+    Q_PROPERTY(QUrl trackingUrl READ trackingUrl WRITE setTrackingUrl NOTIFY trackingUrlChanged)
     Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged)
     Q_PROPERTY(QString trackingId READ trackingId WRITE setTrackingId NOTIFY trackingIdChanged)
 
@@ -32,6 +33,8 @@ signals:
     void textChanged(QString arg);
 
     void trackingIdChanged(QString arg);
+
+    void trackingUrlChanged(QUrl arg);
 
 public:
 
@@ -62,11 +65,17 @@ public:
         return m_trackingId;
     }
 
+    QUrl trackingUrl() const
+    {
+        return m_trackingUrl;
+    }
+
     void setUrl(const QUrl &);
     void setImageUrl(QUrl arg);
     void setFormat(Format arg);
     void setText(QString arg);
     void setTrackingId(QString arg);
+    void setTrackingUrl(QUrl arg);
 
 private:
     QUrl m_url;
@@ -74,6 +83,7 @@ private:
     Format m_format;
     QString m_text;
     QString m_trackingId;
+    QUrl m_trackingUrl;
 };
 
 #endif // QAD_H
