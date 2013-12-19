@@ -46,6 +46,7 @@ class Q_ADSERVICE_EXPORT QAdService : public QObject
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
     Q_PROPERTY(QAdPlatform *platform READ platform WRITE setPlatform NOTIFY platformChanged)
     Q_PROPERTY(QString trackingId READ trackingId WRITE setTrackingId NOTIFY trackingIdChanged)
+    Q_PROPERTY(QString userAgent READ userAgent WRITE setUserAgent NOTIFY userAgentChanged)
 
     Q_PROPERTY(QString slotId READ slotId WRITE setSlotId NOTIFY slotIdChanged)
     Q_PROPERTY(QString keywords READ keywords WRITE setKeywords RESET resetKeywords NOTIFY keywordsChanged)
@@ -91,6 +92,8 @@ signals:
     void visitorGenderChanged(Gender arg);
 
     void visitorAgeChanged(int arg);
+
+    void userAgentChanged(QString arg);
 
 public slots:
     /**
@@ -170,6 +173,9 @@ public:
     Gender visitorGender() const;
     void setVisitorGender(Gender arg);
 
+    QString userAgent() const;
+    void setUserAgent(QString arg);
+
 private:
     void fetchAdFromUrl(const QUrl &, const QByteArray &);
     bool handleResponseData(const QByteArray &aResponseData, const QByteArray &mimeType);
@@ -195,6 +201,7 @@ private:
     mutable QString m_uniqueId;
     Gender          m_visitorGender;
     int             m_visitorAge;
+    QString         m_userAgent;
 };
 
 #endif // QADSERVICE_H

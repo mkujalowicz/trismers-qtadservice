@@ -32,11 +32,12 @@
 #define QADSERVICE_MAXIMUM_REDIRECT_RECURSION 4
 
 // CONSTANTS
-static const QString kUserAgentFormat ="Mozilla/5.0 (X11; Linux x86_64; %1; rv:2.0.1) Gecko/20100101 Firefox/4.0.1";
+static const QString kDefaultUserAgentFormat ="Mozilla/5.0 (X11; Linux x86_64; en-US; rv:2.0.1) Gecko/20100101 Firefox/4.0.1";
 
 QAdService::QAdService(QObject *parent) :
     QObject(parent), m_status(Null), m_reply(NULL), m_platform(NULL), m_adTypeHint(AdTypeHintBanner),
-    m_testMode ( false ), m_ad(new QAd(this)), m_redirectCount(0), m_visitorGender(GenderUnknown), m_visitorAge(-1)
+    m_testMode ( false ), m_ad(new QAd(this)), m_redirectCount(0), m_visitorGender(GenderUnknown), m_visitorAge(-1),
+    m_userAgent(kDefaultUserAgentFormat)
 {
 }
 
@@ -368,6 +369,19 @@ void QAdService::setVisitorGender(QAdService::Gender arg)
     }
 }
 
+QString QAdService::userAgent() const
+{
+    return m_userAgent;
+}
+
+void QAdService::setUserAgent(QString arg)
+{
+    if (m_userAgent != arg) {
+        m_userAgent = arg;
+        emit userAgentChanged(arg);
+    }
+}
+
 QString QAdService::trackingId() const
 {
     return m_trackingId;
@@ -387,7 +401,7 @@ void QAdService::fetchAdFromUrl(const QUrl &url, const QByteArray &data)
     setStatus(Loading);
     QNetworkRequest request;
     request.setUrl(url);
-    request.setRawHeader("User-Agent", kUserAgentFormat.arg(QLocale::system().name()).toUtf8());
+    request.setRawHeader("User-Agent", userAgent().toUtf8());
     request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
     request.setAttribute(QNetworkRequest::CacheSaveControlAttribute, false);
     request.setAttribute(QNetworkRequest::HttpPipeliningAllowedAttribute, true);
