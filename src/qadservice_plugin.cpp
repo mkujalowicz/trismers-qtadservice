@@ -9,7 +9,8 @@
 #include "inneractive/qadplatforminneractive.h"
 
 void QAdServicePlugin::registerTypes(const char *uri) {
-    // @uri QtAdService
+    Q_ASSERT(QLatin1String(uri) == QLatin1String("QtAdService"));
+    Q_UNUSED(uri);
     qmlRegisterType<QAdService>(uri, 1, 0, "AdService");
     qmlRegisterType<QAd>();
     qmlRegisterType<QAdPlatformAdfonic>(uri, 1, 0, "AdPlatformAdfonic");
