@@ -7,6 +7,7 @@
 #include "qadservice.h"
 #include "adfonic/qadplatformadfonic.h"
 #include "inneractive/qadplatforminneractive.h"
+#include "mojiva/qadplatformmojiva.h"
 
 void QAdServicePlugin::registerTypes(const char *uri) {
     Q_ASSERT(QLatin1String(uri) == QLatin1String("QtAdService"));
@@ -15,6 +16,7 @@ void QAdServicePlugin::registerTypes(const char *uri) {
     qmlRegisterType<QAd>();
     qmlRegisterType<QAdPlatformAdfonic>(uri, 1, 0, "AdPlatformAdfonic");
     qmlRegisterType<QAdPlatformInneractive>(uri, 1, 0, "AdPlatformInneractive");
+    qmlRegisterType<QAdPlatformMojiva>(uri, 1, 0, "AdPlatformMojiva");
 }
 
 #ifdef QADSERVICE_QT4

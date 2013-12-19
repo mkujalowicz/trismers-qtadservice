@@ -14,7 +14,8 @@ SOURCES += \
     $$PWD/src/qad.cpp \
     $$PWD/src/qadplatform.cpp \
     $$PWD/platforms/adfonic/qadplatformadfonic.cpp \
-    $$PWD/platforms/inneractive/qadplatforminneractive.cpp
+    $$PWD/platforms/inneractive/qadplatforminneractive.cpp \
+    $$PWD/platforms/mojiva/qadplatformmojiva.cpp
 
 HEADERS += \
     $$PWD/inc/qadservice.h \
@@ -22,4 +23,5 @@ HEADERS += \
     $$PWD/inc/qad.h \
     $$PWD/inc/qadplatform.h \
     $$PWD/platforms/adfonic/qadplatformadfonic.h \
-    $$PWD/platforms/inneractive/qadplatforminneractive.h
+    $$PWD/platforms/inneractive/qadplatforminneractive.h \
+    $$PWD/platforms/mojiva/qadplatformmojiva.h
