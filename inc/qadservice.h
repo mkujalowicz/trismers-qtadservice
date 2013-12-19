@@ -178,7 +178,7 @@ public:
 
 private:
     void fetchAdFromUrl(const QUrl &, const QByteArray &);
-    bool handleResponseData(const QByteArray &aResponseData, const QByteArray &mimeType);
+    bool handleResponseData(const QByteArray &responseData, const QByteArray &mimeType);
     QVariant parseJsonResponseData(const QByteArray &aResponseData);
     QVariant parseXMLResponseData(const QByteArray& aResponseData);
     void setStatus(Status);

@@ -14,6 +14,8 @@ public:
     virtual bool prepareRequest(const QAdService &adService, QUrl &url, QByteArray &bodyData) = 0;
     virtual QAd *createAdFromResponse(const QVariant &response) = 0;
 
+    virtual QByteArray processResponseData(const QByteArray &bodyData);
+
 signals:
 
 public slots:

@@ -187,15 +187,17 @@ void QAdService::networkReplyFinished()
     }
 }
 
-bool QAdService::handleResponseData(const QByteArray &aResponseData, const QByteArray &mimeType)
+bool QAdService::handleResponseData(const QByteArray &responseData, const QByteArray &mimeType)
 {
     QVariant parsedResult = QVariant::Invalid;
 
+    QByteArray data = m_platform->processResponseData(responseData);
+
     if (mimeType.contains("json")) {
-        parsedResult = parseJsonResponseData(aResponseData);
+        parsedResult = parseJsonResponseData(data);
     } else {
         if (mimeType.contains("xml")) {
-            parsedResult = parseXMLResponseData(aResponseData);
+            parsedResult = parseXMLResponseData(data);
         }
     }
     if (!parsedResult.isValid() || parsedResult.isNull()) {
