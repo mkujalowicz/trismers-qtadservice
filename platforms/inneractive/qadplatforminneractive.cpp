@@ -23,10 +23,11 @@ bool QAdPlatformInneractive::prepareRequest(const QAdService &adService, QUrl &u
     QUrlQuery query;
 
     query.addQueryItem("aid", adService.slotId());
-    query.addQueryItem("v", "QtAdService-1.0.0");
+    query.addQueryItem("v", "Sm2m-2.0.1");
     query.addQueryItem("po", QString::number(channelId()));
     query.addQueryItem("hid", adService.uniqueId());
     query.addQueryItem("cid", adService.trackingId());
+    query.addQueryItem("test", adService.testMode() ? "true": "false");
     if (adService.adTypeHint() == QAdService::AdTypeHintInterstitial) {
         query.addQueryItem("fs", "true");
     }
