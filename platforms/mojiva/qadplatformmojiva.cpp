@@ -51,6 +51,7 @@ QAd *QAdPlatformMojiva::createAdFromResponse(const QVariant &response)
     QUrl url;
     QUrl imageUrl;
     QUrl trackingUrl;
+    QString text;
 
     if (response.type() != QVariant::Map)
         return NULL;
@@ -61,26 +62,31 @@ QAd *QAdPlatformMojiva::createAdFromResponse(const QVariant &response)
 
     url = map.value("url").toUrl();
 
-    if (map.value("img").type() != QVariant::List)
-        return NULL;
+    if (map.value("img").type() == QVariant::List) {
+        QVariantList imgList = map.value("img").toList();
+        if (imgList.count() == 0)
+            return NULL;
 
-    QVariantList imgList = map.value("img").toList();
-    if (imgList.count() == 0)
-        return NULL;
-
-    imageUrl = imgList[0].toUrl();
+        imageUrl = imgList[0].toUrl();
+    }
 
     QVariantList trackingList = map.value("track").toList();
-    if (trackingList.count() == 0)
-        return NULL;
+    if (trackingList.count()) {
+        trackingUrl = trackingList[0].toUrl();
+    }
 
-    trackingUrl = trackingList[0].toUrl();
+    text = map.value("text").toString();
+
+    if (text.length() == 0 && imageUrl.isEmpty())
+        return NULL;
 
     QAd *newAd = new QAd();
 
     newAd->setUrl(url);
     newAd->setImageUrl(imageUrl);
     newAd->setTrackingUrl(trackingUrl);
+    newAd->setText(text);
+    newAd->setFormat(imageUrl.isEmpty() ? QAd::Text: QAd::Banner);
     return newAd;
 }
 

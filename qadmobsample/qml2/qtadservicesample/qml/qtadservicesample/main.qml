@@ -49,8 +49,8 @@ Rectangle {
         keywords: "game fun"
         adTypeHint: AdService.AdTypeHintBanner
         visitorAge: 3
-        platform: AdPlatformInneractive {
-            channelId: 958
+        platform: AdPlatformMojiva{
+
         }
     }
 }
